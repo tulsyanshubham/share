@@ -1,0 +1,1009 @@
+In Spring Boot, you can use the @PutMapping annotation to update an object. Here’s an example:
+
+1. Create an Entity:
+java
+Copy
+Edit
+@Entity
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private double price;
+
+    // Getters and Setters
+}
+2. Create a Repository:
+java
+Copy
+Edit
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long> {
+}
+3. Create a Service:
+java
+Copy
+Edit
+@Service
+public class ProductService {
+    @Autowired
+    private ProductRepository productRepository;
+
+    public Product updateProduct(Long id, Product updatedProduct) {
+        return productRepository.findById(id).map(product -> {
+            product.setName(updatedProduct.getName());
+            product.setPrice(updatedProduct.getPrice());
+            return productRepository.save(product);
+        }).orElseThrow(() -> new RuntimeException("Product not found"));
+    }
+}
+4. Create a Controller:
+java
+Copy
+Edit
+@RestController
+@RequestMapping("/products")
+public class ProductController {
+    @Autowired
+    private ProductService productService;
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        Product updatedProduct = productService.updateProduct(id, product);
+        return ResponseEntity.ok(updatedProduct);
+    }
+}
+API Usage:
+PUT Request:
+PUT /products/1
+Request Body:
+
+json
+Copy
+Edit
+{
+  "name": "Updated Product",
+  "price": 200.0
+}
+This will update the product with id=1.
+
+
+
+
+
+
+
+
+You said:
+I am not using a db 
+I am saving everything in an arraylist
+ChatGPT said:
+If you're storing objects in an ArrayList instead of a database, you can update an object in Spring Boot using @PutMapping like this:
+
+1. Create a Model:
+java
+Copy
+Edit
+public class Product {
+    private Long id;
+    private String name;
+    private double price;
+
+    // Constructor
+    public Product(Long id, String name, double price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+
+    // Getters and Setters
+}
+2. Create a Service:
+java
+Copy
+Edit
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ProductService {
+    private List<Product> products = new ArrayList<>();
+
+    // Method to update product
+    public Product updateProduct(Long id, Product updatedProduct) {
+        Optional<Product> existingProduct = products.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst();
+
+        if (existingProduct.isPresent()) {
+            Product product = existingProduct.get();
+            product.setName(updatedProduct.getName());
+            product.setPrice(updatedProduct.getPrice());
+            return product;
+        } else {
+            throw new RuntimeException("Product not found");
+        }
+    }
+
+    // Method to add product (for testing)
+    public void addProduct(Product product) {
+        products.add(product);
+    }
+}
+3. Create a Controller:
+java
+Copy
+Edit
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/products")
+public class ProductController {
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        Product updatedProduct = productService.updateProduct(id, product);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
+    // Endpoint to add product (for testing)
+    @PostMapping
+    public ResponseEntity<String> addProduct(@RequestBody Product product) {
+        productService.addProduct(product);
+        return ResponseEntity.ok("Product added successfully");
+    }
+}
+Usage:
+Add a Product
+POST /products
+
+json
+Copy
+Edit
+{
+  "id": 1,
+  "name": "Laptop",
+  "price": 50000.0
+}
+Update the Product
+PUT /products/1
+
+json
+Copy
+Edit
+{
+  "name": "Gaming Laptop",
+  "price": 60000.0
+}
+This will update the product in the ArrayList.
+
+
+
+
+
+
+
+You said:
+If an object is not found I want to send error msg in api response
+ChatGPT said:
+You can modify your controller to return a proper error message when an object is not found. Here's the updated code:
+
+1. Modify the Service to Throw a Custom Exception
+java
+Copy
+Edit
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class ProductService {
+    private List<Product> products = new ArrayList<>();
+
+    public Product updateProduct(Long id, Product updatedProduct) {
+        Optional<Product> existingProduct = products.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst();
+
+        if (existingProduct.isPresent()) {
+            Product product = existingProduct.get();
+            product.setName(updatedProduct.getName());
+            product.setPrice(updatedProduct.getPrice());
+            return product;
+        } else {
+            throw new ProductNotFoundException("Product with ID " + id + " not found.");
+        }
+    }
+
+    public void addProduct(Product product) {
+        products.add(product);
+    }
+}
+2. Create a Custom Exception Class
+java
+Copy
+Edit
+public class ProductNotFoundException extends RuntimeException {
+    public ProductNotFoundException(String message) {
+        super(message);
+    }
+}
+3. Create a Global Exception Handler
+java
+Copy
+Edit
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<String> handleProductNotFoundException(ProductNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+}
+4. Modify the Controller
+java
+Copy
+Edit
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/products")
+public class ProductController {
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        Product updatedProduct = productService.updateProduct(id, product);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
+    @PostMapping
+    public ResponseEntity<String> addProduct(@RequestBody Product product) {
+        productService.addProduct(product);
+        return ResponseEntity.ok("Product added successfully");
+    }
+}
+API Response When Product is Not Found
+Request:
+PUT /products/10
+
+Response (404 Not Found):
+
+json
+Copy
+Edit
+{
+  "message": "Product with ID 10 not found."
+}
+Now, when a product with the given ID is not found, the API returns a proper 404 error message instead of crashing.
+
+
+
+
+
+
+
+You said:
+Java Assignment: Interactive Movie Database Management System
+
+Problem Statement
+
+@
+
+نا
+
+You have been tasked with creating an interactive Movie Database Management System. This system will allow users to add, update, delete, and display information about movies through a REST APIs. The system should be implemented using Spring boot, REST APIs and Java's Collection Framework, specifically focusing on the use of ArrayList, HashMap, and HashSet.
+
+Requirements
+
+1. Movie Class:
+
+Create a Movie class with the following attributes:
+
+String title
+
+String genre
+
+String director
+
+int releaseYear
+
+double rating
+
+Implement the necessary constructors, getters, and setters
+
+. Override the tostring method to provide a meaningful representation of the movie details.
+2. Movie Database Class:
+
+Create a MovieDatabase class that will manage a collection of Movie objects.
+
+Use an ArrayList to store the movies.
+
+3. Functionality:
+
+Implement the following methods in the MovieDatabase class:
+
+@
+
+void addMovie (Movie movie): Adds a new movie to the database.
+
+boolean removeMovie (String title): Removes a movie by its title. Returns true if the movie was successfully removed, false otherwise.
+
+Movie getMovie (String title): Returns the movie object for the given title. Returns null if the movie is not found.
+
+1. List<Movie> getAllMovies (): Returns a list of all movies in the database.
+
+List<Movie> getMoviesByGenre (String genre): Returns a list of movies that match the given genre.
+
+List<Movie> getMoviesByDirector (String director): Returns a list of movies directed by the given director.
+
+List<Movie> getMoviesByReleaseYear (int year): Returns a list of movies released in the given year.
+
+List<Movie> getTopRatedMovies (int n): Returns a list of the top n movies sorted by rating in descending order
+4. WEB APIs:
+
+Create a MovieController class to manage user interaction through the console.
+
+@
+
+Π
+
+GET
+
+PUT
+
+POST
+
+DELETE
+
+Implement input validation to ensure the user provides valid data.
+
+Implement appropriate exception handling for invalid inputs.
+5. Spring Boot:
+
+Run spring boot server locally in your system
+
+Populate the database with at least 10 movies for initial testing.
+ChatGPT said:
+Here’s the implementation of your Interactive Movie Database Management System using Spring Boot, REST APIs, and Java’s Collection Framework.
+
+Step 1: Create the Movie Class
+This class represents a movie entity with the required attributes.
+
+java
+Copy
+Edit
+public class Movie {
+    private String title;
+    private String genre;
+    private String director;
+    private int releaseYear;
+    private double rating;
+
+    // Constructor
+    public Movie(String title, String genre, String director, int releaseYear, double rating) {
+        this.title = title;
+        this.genre = genre;
+        this.director = director;
+        this.releaseYear = releaseYear;
+        this.rating = rating;
+    }
+
+    // Getters and Setters
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    
+    public String getGenre() { return genre; }
+    public void setGenre(String genre) { this.genre = genre; }
+    
+    public String getDirector() { return director; }
+    public void setDirector(String director) { this.director = director; }
+    
+    public int getReleaseYear() { return releaseYear; }
+    public void setReleaseYear(int releaseYear) { this.releaseYear = releaseYear; }
+    
+    public double getRating() { return rating; }
+    public void setRating(double rating) { this.rating = rating; }
+
+    // toString method for meaningful representation
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "title='" + title + '\'' +
+                ", genre='" + genre + '\'' +
+                ", director='" + director + '\'' +
+                ", releaseYear=" + releaseYear +
+                ", rating=" + rating +
+                '}';
+    }
+}
+Step 2: Create the MovieDatabase Class
+This class will manage movies using an ArrayList.
+
+java
+Copy
+Edit
+import org.springframework.stereotype.Service;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class MovieDatabase {
+    private final List<Movie> movies = new ArrayList<>();
+
+    // Populate database with initial movies
+    public MovieDatabase() {
+        movies.add(new Movie("Inception", "Sci-Fi", "Christopher Nolan", 2010, 8.8));
+        movies.add(new Movie("Interstellar", "Sci-Fi", "Christopher Nolan", 2014, 8.6));
+        movies.add(new Movie("The Dark Knight", "Action", "Christopher Nolan", 2008, 9.0));
+        movies.add(new Movie("Pulp Fiction", "Crime", "Quentin Tarantino", 1994, 8.9));
+        movies.add(new Movie("Forrest Gump", "Drama", "Robert Zemeckis", 1994, 8.8));
+        movies.add(new Movie("The Matrix", "Sci-Fi", "Lana Wachowski", 1999, 8.7));
+        movies.add(new Movie("Gladiator", "Action", "Ridley Scott", 2000, 8.5));
+        movies.add(new Movie("Titanic", "Romance", "James Cameron", 1997, 7.8));
+        movies.add(new Movie("The Godfather", "Crime", "Francis Ford Coppola", 1972, 9.2));
+        movies.add(new Movie("Schindler's List", "Drama", "Steven Spielberg", 1993, 9.0));
+    }
+
+    // Add a new movie
+    public void addMovie(Movie movie) {
+        movies.add(movie);
+    }
+
+    // Remove a movie by title
+    public boolean removeMovie(String title) {
+        return movies.removeIf(movie -> movie.getTitle().equalsIgnoreCase(title));
+    }
+
+    // Get a movie by title
+    public Movie getMovie(String title) {
+        return movies.stream()
+                .filter(movie -> movie.getTitle().equalsIgnoreCase(title))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // Get all movies
+    public List<Movie> getAllMovies() {
+        return movies;
+    }
+
+    // Get movies by genre
+    public List<Movie> getMoviesByGenre(String genre) {
+        return movies.stream()
+                .filter(movie -> movie.getGenre().equalsIgnoreCase(genre))
+                .collect(Collectors.toList());
+    }
+
+    // Get movies by director
+    public List<Movie> getMoviesByDirector(String director) {
+        return movies.stream()
+                .filter(movie -> movie.getDirector().equalsIgnoreCase(director))
+                .collect(Collectors.toList());
+    }
+
+    // Get movies by release year
+    public List<Movie> getMoviesByReleaseYear(int year) {
+        return movies.stream()
+                .filter(movie -> movie.getReleaseYear() == year)
+                .collect(Collectors.toList());
+    }
+
+    // Get top N rated movies
+    public List<Movie> getTopRatedMovies(int n) {
+        return movies.stream()
+                .sorted(Comparator.comparingDouble(Movie::getRating).reversed())
+                .limit(n)
+                .collect(Collectors.toList());
+    }
+}
+Step 3: Create the MovieController Class
+This will handle REST API requests.
+
+java
+Copy
+Edit
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/movies")
+public class MovieController {
+    private final MovieDatabase movieDatabase;
+
+    public MovieController(MovieDatabase movieDatabase) {
+        this.movieDatabase = movieDatabase;
+    }
+
+    // Add a movie
+    @PostMapping
+    public ResponseEntity<String> addMovie(@RequestBody Movie movie) {
+        movieDatabase.addMovie(movie);
+        return ResponseEntity.ok("Movie added successfully");
+    }
+
+    // Remove a movie
+    @DeleteMapping("/{title}")
+    public ResponseEntity<String> removeMovie(@PathVariable String title) {
+        boolean removed = movieDatabase.removeMovie(title);
+        if (removed) {
+            return ResponseEntity.ok("Movie removed successfully");
+        } else {
+            return ResponseEntity.status(404).body("Movie not found");
+        }
+    }
+
+    // Get a movie by title
+    @GetMapping("/{title}")
+    public ResponseEntity<?> getMovie(@PathVariable String title) {
+        Movie movie = movieDatabase.getMovie(title);
+        if (movie != null) {
+            return ResponseEntity.ok(movie);
+        } else {
+            return ResponseEntity.status(404).body("Movie not found");
+        }
+    }
+
+    // Get all movies
+    @GetMapping
+    public ResponseEntity<List<Movie>> getAllMovies() {
+        return ResponseEntity.ok(movieDatabase.getAllMovies());
+    }
+
+    // Get movies by genre
+    @GetMapping("/genre/{genre}")
+    public ResponseEntity<List<Movie>> getMoviesByGenre(@PathVariable String genre) {
+        return ResponseEntity.ok(movieDatabase.getMoviesByGenre(genre));
+    }
+
+    // Get movies by director
+    @GetMapping("/director/{director}")
+    public ResponseEntity<List<Movie>> getMoviesByDirector(@PathVariable String director) {
+        return ResponseEntity.ok(movieDatabase.getMoviesByDirector(director));
+    }
+
+    // Get movies by release year
+    @GetMapping("/year/{year}")
+    public ResponseEntity<List<Movie>> getMoviesByReleaseYear(@PathVariable int year) {
+        return ResponseEntity.ok(movieDatabase.getMoviesByReleaseYear(year));
+    }
+
+    // Get top rated movies
+    @GetMapping("/top/{n}")
+    public ResponseEntity<List<Movie>> getTopRatedMovies(@PathVariable int n) {
+        return ResponseEntity.ok(movieDatabase.getTopRatedMovies(n));
+    }
+}
+Step 4: Run the Spring Boot Application
+Create a main class to start the application.
+
+java
+Copy
+Edit
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class MovieDatabaseApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MovieDatabaseApplication.class, args);
+    }
+}
+Testing the APIs
+Get All Movies:
+GET /movies
+
+Get Movie by Title:
+GET /movies/Inception
+
+Add a Movie:
+POST /movies
+
+json
+Copy
+Edit
+{
+  "title": "Avatar",
+  "genre": "Sci-Fi",
+  "director": "James Cameron",
+  "releaseYear": 2009,
+  "rating": 7.9
+}
+Remove a Movie:
+DELETE /movies/Inception
+
+Get Movies by Genre:
+GET /movies/genre/Sci-Fi
+
+Get Top Rated Movies:
+GET /movies/top/5
+
+This implementation meets all requirements and runs locally using Spring Boot. Let me know if you need any modifications!
+
+
+
+
+
+
+
+You said:
+Implement input validation to ensure the user provides valid data.
+
+Implement appropriate exception handling for invalid inputs.
+ChatGPT said:
+To implement input validation and exception handling, we will use Spring Boot's @Valid annotation along with custom exception handling.
+
+1. Modify the Movie Class to Add Validation
+Use Jakarta Validation annotations to enforce input rules.
+
+java
+Copy
+Edit
+import jakarta.validation.constraints.*;
+
+public class Movie {
+    @NotBlank(message = "Title cannot be blank")
+    private String title;
+
+    @NotBlank(message = "Genre cannot be blank")
+    private String genre;
+
+    @NotBlank(message = "Director cannot be blank")
+    private String director;
+
+    @Min(value = 1888, message = "Release year must be later than 1888")
+    @Max(value = 2100, message = "Release year must be realistic")
+    private int releaseYear;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "Rating must be at least 0.0")
+    @DecimalMax(value = "10.0", inclusive = true, message = "Rating must be at most 10.0")
+    private double rating;
+
+    // Constructor
+    public Movie(String title, String genre, String director, int releaseYear, double rating) {
+        this.title = title;
+        this.genre = genre;
+        this.director = director;
+        this.releaseYear = releaseYear;
+        this.rating = rating;
+    }
+
+    // Getters and Setters
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getGenre() { return genre; }
+    public void setGenre(String genre) { this.genre = genre; }
+
+    public String getDirector() { return director; }
+    public void setDirector(String director) { this.director = director; }
+
+    public int getReleaseYear() { return releaseYear; }
+    public void setReleaseYear(int releaseYear) { this.releaseYear = releaseYear; }
+
+    public double getRating() { return rating; }
+    public void setRating(double rating) { this.rating = rating; }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "title='" + title + '\'' +
+                ", genre='" + genre + '\'' +
+                ", director='" + director + '\'' +
+                ", releaseYear=" + releaseYear +
+                ", rating=" + rating +
+                '}';
+    }
+}
+2. Modify MovieController to Handle Validation
+Use @Valid and @RequestBody for request validation.
+
+java
+Copy
+Edit
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/movies")
+public class MovieController {
+    private final MovieDatabase movieDatabase;
+
+    public MovieController(MovieDatabase movieDatabase) {
+        this.movieDatabase = movieDatabase;
+    }
+
+    // Add a movie with validation
+    @PostMapping
+    public ResponseEntity<String> addMovie(@Valid @RequestBody Movie movie) {
+        movieDatabase.addMovie(movie);
+        return ResponseEntity.ok("Movie added successfully");
+    }
+
+    // Remove a movie
+    @DeleteMapping("/{title}")
+    public ResponseEntity<String> removeMovie(@PathVariable String title) {
+        boolean removed = movieDatabase.removeMovie(title);
+        if (removed) {
+            return ResponseEntity.ok("Movie removed successfully");
+        } else {
+            return ResponseEntity.status(404).body("Movie not found");
+        }
+    }
+
+    // Get a movie by title
+    @GetMapping("/{title}")
+    public ResponseEntity<?> getMovie(@PathVariable String title) {
+        Movie movie = movieDatabase.getMovie(title);
+        if (movie != null) {
+            return ResponseEntity.ok(movie);
+        } else {
+            return ResponseEntity.status(404).body("Movie not found");
+        }
+    }
+
+    // Get all movies
+    @GetMapping
+    public ResponseEntity<List<Movie>> getAllMovies() {
+        return ResponseEntity.ok(movieDatabase.getAllMovies());
+    }
+
+    // Get movies by genre
+    @GetMapping("/genre/{genre}")
+    public ResponseEntity<List<Movie>> getMoviesByGenre(@PathVariable String genre) {
+        return ResponseEntity.ok(movieDatabase.getMoviesByGenre(genre));
+    }
+
+    // Get movies by director
+    @GetMapping("/director/{director}")
+    public ResponseEntity<List<Movie>> getMoviesByDirector(@PathVariable String director) {
+        return ResponseEntity.ok(movieDatabase.getMoviesByDirector(director));
+    }
+
+    // Get movies by release year
+    @GetMapping("/year/{year}")
+    public ResponseEntity<List<Movie>> getMoviesByReleaseYear(@PathVariable int year) {
+        return ResponseEntity.ok(movieDatabase.getMoviesByReleaseYear(year));
+    }
+
+    // Get top-rated movies
+    @GetMapping("/top/{n}")
+    public ResponseEntity<List<Movie>> getTopRatedMovies(@PathVariable int n) {
+        return ResponseEntity.ok(movieDatabase.getTopRatedMovies(n));
+    }
+}
+3. Implement Global Exception Handling
+This class will handle exceptions and provide meaningful error responses.
+
+java
+Copy
+Edit
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    // Handle validation errors
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    // Handle generic exceptions
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGlobalException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
+    }
+}
+Testing the APIs
+1. Valid Movie Addition
+Request (Valid Data)
+POST /movies
+
+json
+Copy
+Edit
+{
+  "title": "Avatar",
+  "genre": "Sci-Fi",
+  "director": "James Cameron",
+  "releaseYear": 2009,
+  "rating": 7.9
+}
+Response (201 Created)
+
+json
+Copy
+Edit
+"Movie added successfully"
+2. Invalid Movie Addition
+Request (Invalid Data)
+POST /movies
+
+json
+Copy
+Edit
+{
+  "title": "",
+  "genre": "Sci-Fi",
+  "director": "James Cameron",
+  "releaseYear": 3000,
+  "rating": 11.0
+}
+Response (400 Bad Request)
+
+json
+Copy
+Edit
+{
+  "title": "Title cannot be blank",
+  "releaseYear": "Release year must be realistic",
+  "rating": "Rating must be at most 10.0"
+}
+3. Get a Non-Existing Movie
+Request:
+GET /movies/UnknownMovie
+
+Response (404 Not Found)
+
+json
+Copy
+Edit
+"Movie not found"
+Conclusion
+Now, the system: ✅ Validates movie data using @Valid.
+✅ Handles exceptions using @RestControllerAdvice.
+✅ Returns proper error messages for invalid inputs.
+
+This ensures robust validation and error handling for your Movie Database Management System. Let me know if you need modifications!
+
+
+ChatGPT said:
+To update a movie by its title using @PutMapping, we will:
+
+Find the movie by title in the ArrayList.
+Update its fields with the new values from the request.
+Return an error if the movie is not found.
+Modify MovieController to Add Update API
+java
+Copy
+Edit
+@PutMapping("/{title}")
+public ResponseEntity<String> updateMovie(@PathVariable String title, @Valid @RequestBody Movie updatedMovie) {
+    boolean updated = movieDatabase.updateMovie(title, updatedMovie);
+    if (updated) {
+        return ResponseEntity.ok("Movie updated successfully");
+    } else {
+        return ResponseEntity.status(404).body("Movie not found");
+    }
+}
+Modify MovieDatabase to Implement Update Logic
+java
+Copy
+Edit
+import java.util.ArrayList;
+import java.util.List;
+
+public class MovieDatabase {
+    private final List<Movie> movies = new ArrayList<>();
+
+    // Add movie
+    public void addMovie(Movie movie) {
+        movies.add(movie);
+    }
+
+    // Remove movie
+    public boolean removeMovie(String title) {
+        return movies.removeIf(movie -> movie.getTitle().equalsIgnoreCase(title));
+    }
+
+    // Get movie by title
+    public Movie getMovie(String title) {
+        return movies.stream()
+                .filter(movie -> movie.getTitle().equalsIgnoreCase(title))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // Get all movies
+    public List<Movie> getAllMovies() {
+        return new ArrayList<>(movies);
+    }
+
+    // Update movie by title
+    public boolean updateMovie(String title, Movie updatedMovie) {
+        for (int i = 0; i < movies.size(); i++) {
+            if (movies.get(i).getTitle().equalsIgnoreCase(title)) {
+                movies.set(i, updatedMovie);
+                return true;
+            }
+        }
+        return false;
+    }
+}
+Testing the Update API
+1. Updating an Existing Movie
+Request:
+PUT /movies/Avatar
+
+json
+Copy
+Edit
+{
+  "title": "Avatar",
+  "genre": "Sci-Fi",
+  "director": "James Cameron",
+  "releaseYear": 2010,
+  "rating": 8.5
+}
+Response (200 OK)
+
+json
+Copy
+Edit
+"Movie updated successfully"
+2. Updating a Non-Existing Movie
+Request:
+PUT /movies/UnknownMovie
+
+json
+Copy
+Edit
+{
+  "title": "UnknownMovie",
+  "genre": "Action",
+  "director": "Unknown",
+  "releaseYear": 2022,
+  "rating": 7.0
+}
+Response (404 Not Found)
+
+json
+Copy
+Edit
+"Movie not found"
+Final Features
+✅ Validates input before updating.
+✅ Returns an error if the movie is not found.
+✅ Updates existing movies by matching the title.
+
+Now, your Movie Database Management System fully supports updating movies with error handling! 🚀
