@@ -1,0 +1,156 @@
+npm init -y
+npm install express pg dotenv
+npm install --save-dev typescript @types/express @types/node @types/pg ts-node nodemon
+
+npx tsc --init
+
+tsconfig.json:
+{
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "CommonJS",
+      "outDir": "./dist",
+      "rootDir": "./src",
+      "strict": true
+    }
+  }
+
+/student-api
+ ├── src/
+ │   ├── index.ts
+ │   ├── db.ts
+ │   ├── routes.ts
+ │   ├── types.ts
+ ├── tsconfig.json
+ ├── package.json
+ ├── .env
+ ├── nodemon.json
+
+
+
+src/db.ts
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+export const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: Number(process.env.DB_PORT),
+});
+
+
+src/types.ts
+export interface Student {
+    id?: number;
+    name: string;
+    age: number;
+    email: string;
+}
+
+
+src/routes.ts
+import express, { Request, Response } from 'express';
+import { pool } from './db';
+import { Student } from './types';
+
+const router = express.Router();
+
+// Create a student
+router.post('/students', async (req: Request, res: Response) => {
+    const { name, age, email }: Student = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO students (name, age, email) VALUES ($1, $2, $3) RETURNING *',
+            [name, age, email]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get all students
+router.get('/students', async (_req: Request, res: Response) => {
+    try {
+        const result = await pool.query('SELECT * FROM students');
+        res.json(result.rows);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get a student by ID
+router.get('/students/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('SELECT * FROM students WHERE id = $1', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Student not found' });
+        res.json(result.rows[0]);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update a student
+router.put('/students/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { name, age, email }: Student = req.body;
+    try {
+        const result = await pool.query(
+            'UPDATE students SET name = $1, age = $2, email = $3 WHERE id = $4 RETURNING *',
+            [name, age, email, id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Student not found' });
+        res.json(result.rows[0]);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete a student
+router.delete('/students/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query('DELETE FROM students WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Student not found' });
+        res.json({ message: 'Student deleted' });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+export default router;
+
+
+src/index.ts
+import express from 'express';
+import dotenv from 'dotenv';
+import studentRoutes from './routes';
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use('/api', studentRoutes);
+
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
+
+
+nodemon.json
+{
+  "watch": ["src"],
+  "ext": "ts",
+  "exec": "ts-node src/index.ts"
+}
+
+
+Run the Server
+npx nodemon
