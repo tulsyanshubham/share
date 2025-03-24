@@ -5,7 +5,9 @@ import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
-// connectDB();
+if (process.env.NODE_ENV !== "test") {
+    connectDB();
+}
 
 const app = express();
 

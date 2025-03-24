@@ -5,22 +5,23 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "mocha tests --timeout 5000"
+    "test": "powershell -Command \"$env:NODE_ENV='test'; mocha tests --timeout 5000\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "chai": "^5.2.0",
-    "chai-http": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongoose": "^8.12.2"
   },
   "devDependencies": {
+    "chai": "^5.2.0",
+    "chai-http": "^5.1.1",
     "mocha": "^11.1.0",
-    "supertest": "^7.1.0"
+    "supertest": "^7.1.0",
+    "uuid": "^11.1.0"
   }
 }

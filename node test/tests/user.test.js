@@ -1,39 +1,31 @@
-// import chai, { use, request } from "chai";
-// import chaiHttp from "chai-http";
-
-// import { use, expect } from 'chai'
-// import chaiHttp from 'chai-http'
-// const chai = use(chaiHttp)
-
-// chai.request()
+// https://github.com/chaijs/chai/issues/1578
 
 import { app, server } from "../server.js";
 // import { connect, connection } from "mongoose";
 import pkg from 'mongoose';
 const { connect, connection } = pkg;
-
-
+import { v4 as uuidv4 } from 'uuid';
 
 import chaiHttp from "chai-http";
 import * as chai from "chai";
 const should = chai.should();
 const expect = chai.expect;
-const use = chai.use;
 
-const request = use(chaiHttp).request.execute;
+const request = chai.use(chaiHttp).request.execute;
 
 // use(chaiHttp);
 // const { expect } = chai;
+const testDbName = `testdb_${uuidv4()}`;
 
 describe("User API", () => {
     // Before running tests, connect to the database
     before(async () => {
-        await connect("mongodb://127.0.0.1:27017/testdb");
-        // startServer();
+        await connect(`mongodb://127.0.0.1:27017/${testDbName}`);
     });
 
     // After tests, disconnect from the database
     after(async () => {
+        await connection.db.dropDatabase(); 
         await connection.close();
         server.close();
     });
