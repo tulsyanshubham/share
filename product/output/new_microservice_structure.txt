@@ -1,0 +1,36 @@
+config
+  └── db_config.js
+  └── env.py
+
+connections
+  └── mongodb_connection.js
+
+api
+  └── app.py
+
+auth
+  └── token_handler.py
+  └── user_auth.py
+  └── password_hasher.py
+
+db
+  └── services.js
+  └── count
+    └── schemas.py
+    └── management.py
+
+models
+  └── employee.schema.js
+  └── manager
+    └── schema.py
+    └── model.py
+  └── session
+    └── schema.js
+    └── model.js
+
+services
+  └── email.py
+  └── staff
+    └── management.js
+
+package.json

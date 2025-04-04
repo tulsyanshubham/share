@@ -1,0 +1,35 @@
+{
+    "db.js": [
+        "config/db_config.js",
+        "connections/mongodb_connection.js",
+        "services/db_services.js"
+    ],
+    "index.js": [
+        "config/env.py",
+        "api/app.py",
+        "services/auth.py",
+        "services/email.py"
+    ],
+    "middleware/fetchuser.js": [
+        "services/auth/token_handler.py",
+        "services/auth/user_auth.py"
+    ],
+    "modals/count.js": [
+        "services/db/count/schemas.py",
+        "services/db/count/management.py"
+    ],
+    "modals/employee.js": [
+        "models/employee.schema.js",
+        "services/staff.management.js"
+    ],
+    "modals/manager.js": [
+        "models/manager/schema.py",
+        "services/auth/password_hasher.py",
+        "models/manager/model.py"
+    ],
+    "modals/session.js": [
+        "schemas/session.schema.js",
+        "models/session.model.js"
+    ],
+    "package.json": []
+}
