@@ -24,13 +24,6 @@
             "content": "require('dotenv').config();\nconst jwt = require('jsonwebtoken');\nconst secretKey = process.env.SECTET_KEY;\n\nconst fetchuser = (req,res,next) => {\n    const token = req.header(\"auth-token\");\n    console.log(token)\n    if(!token){\n        res.status(401).send({error : \"Invalid Token\"});\n    }\n    try {\n        const data = jwt.verify(token, secretKey);\n        req.user = {\n            id : data.id,\n            token : token,\n        }\n        next();\n        \n    } catch (error) {\n        res.status(401).send({error : \"Invalid Token\"});\n    }\n}\n\nmodule.exports = fetchuser;"
         },
         {
-            "name": "count.js",
-            "size": 364,
-            "html_url": "https://github.com/tulsyanshubham/TipyDo-Backend/blob/main/modals/count.js",
-            "path": "modals/count.js",
-            "content": "const mongoose = require('mongoose');\nconst { Schema } = mongoose;\n\nconst countschema = new Schema({\n    managerusername: {\n        type: String,\n        require: true\n    },\n    count: {\n        type: Number\n    }\n});\n\n// sessionschema.index({ expireAt: 1 }, { expireAfterSeconds: 60 });\nconst Count = mongoose.model('count', countschema);\nmodule.exports = Count;"
-        },
-        {
             "name": "employee.js",
             "size": 1826,
             "html_url": "https://github.com/tulsyanshubham/TipyDo-Backend/blob/main/modals/employee.js",
@@ -38,18 +31,25 @@
             "content": "const mongoose = require('mongoose');\nconst bcrypt = require('bcrypt');\nconst { Schema } = mongoose;\n\nconst employeeschema = new Schema({\n    managerusername: {\n        type: String,\n        require: true\n    },\n    name: {\n        type: String,\n        require: true\n    },\n    employeetype: {\n        type: String,\n        enum: ['Full-time', 'Part-time', 'Temporary', 'Intern', 'Seasonal', 'Leased'],\n        require: true,\n    },\n    worktype: {\n        type: String,\n        require: true\n    },\n    dateofjoining: {\n        type: Date,\n        require: true,\n        default: Date.now\n    },\n    email: {\n        type: String,\n        required: true,\n        trim: true,\n        unique: [true, \"Email already Exists\"],\n        validate: {\n            validator: function (value) {\n                return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value);\n            },\n            message: 'Invalid email address'\n        }\n    },\n    phone: {\n        type: String,\n        required: true,\n        trim: true,\n        validate: {\n            validator: function (value) {\n                return /^\\d{10}$/.test(value);\n            },\n            message: 'Invalid mobile number'\n        }\n    },\n    upiId: {\n        //todo\n        type: String,\n        require: true\n    },\n    upiname: {\n        type: String,\n        require: true\n    },\n    password: {\n        type: String,\n        require: true\n    },\n    image: {\n        //todo\n        type: String,\n        require: true\n    },\n});\n\n// passord Hash\nemployeeschema.pre('save', async function (next) {\n    if (this.isModified(\"password\")) {\n        this.password = await bcrypt.hash(this.password, 10);\n        console.log(`Hashed Password : ${this.password}`);\n    }\n    next();\n})\n\nconst Employee = mongoose.model('employee', employeeschema);\nmodule.exports = Employee;"
         },
         {
-            "name": "manager.js",
-            "size": 1613,
-            "html_url": "https://github.com/tulsyanshubham/TipyDo-Backend/blob/main/modals/manager.js",
-            "path": "modals/manager.js",
-            "content": "const mongoose = require('mongoose');\nconst bcrypt = require('bcrypt');\nconst { Schema } = mongoose;\n\nconst managerschema = new Schema({\n    ownername: {\n        type: String,\n        require: true\n    },\n    businessname: {\n        type: String,\n        require: true,\n    },\n    businesstype: {\n        type: String,\n        enum: ['Hotel', 'Valet', 'Bar', 'Restaurant', 'Salon', 'Non-Profit'],\n        require: true,\n    },\n    date: {\n        type: Date,\n        default: Date.now\n    },\n    email: {\n        type: String,\n        required: true,\n        trim: true,\n        // unique: [true, \"Email already Exists\"],\n        validate: {\n            validator: function (value) {\n                return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value);\n            },\n            message: 'Invalid email address'\n        }\n    },\n    phone: {\n        type: String,\n        required: true,\n        trim: true,\n        validate: {\n            validator: function (value) {\n                return /^\\d{10}$/.test(value);\n            },\n            message: 'Invalid mobile number'\n        }\n    },\n    username: {\n        type: String,\n        require: true,\n        unique: [true, \"Username already Exists\"],\n    },\n    password: {\n        type: String,\n        require: true,\n    }\n});\n\n// passord Hash\nmanagerschema.pre('save', async function (next) {\n    if (this.isModified(\"password\")) {\n        this.password = await bcrypt.hash(this.password, 10);\n        console.log(`Hashed Password : ${this.password}`);\n    }\n    next();\n})\n\nconst Manager = mongoose.model('manager', managerschema);\nmodule.exports = Manager;"
-        },
-        {
             "name": "session.js",
             "size": 593,
             "html_url": "https://github.com/tulsyanshubham/TipyDo-Backend/blob/main/modals/session.js",
             "path": "modals/session.js",
             "content": "const mongoose = require('mongoose');\nconst { Schema } = mongoose;\n\nconst sessionschema = new Schema({\n    managerusername: {\n        type: String,\n        require: true\n    },\n    email: {\n        type: String,\n        required: true,\n        trim: true\n    },\n    tableno: {\n        type: Number,\n        required: true,\n    },\n    // expireAt: {\n    //     type: Date,\n    //     default: Date.now,\n    //     expires: 5000\n    // }\n});\n\n// sessionschema.index({ expireAt: 1 }, { expireAfterSeconds: 60 });\nconst Session = mongoose.model('session', sessionschema);\nmodule.exports = Session;"
+        },
+        {
+            "name": "count.js",
+            "size": 364,
+            "html_url": "https://github.com/tulsyanshubham/TipyDo-Backend/blob/main/modals/count.js",
+            "path": "modals/count.js",
+            "content": "const mongoose = require('mongoose');\nconst { Schema } = mongoose;\n\nconst countschema = new Schema({\n    managerusername: {\n        type: String,\n        require: true\n    },\n    count: {\n        type: Number\n    }\n});\n\n// sessionschema.index({ expireAt: 1 }, { expireAfterSeconds: 60 });\nconst Count = mongoose.model('count', countschema);\nmodule.exports = Count;"
+        },
+        {
+            "name": "manager.js",
+            "size": 1613,
+            "html_url": "https://github.com/tulsyanshubham/TipyDo-Backend/blob/main/modals/manager.js",
+            "path": "modals/manager.js",
+            "content": "const mongoose = require('mongoose');\nconst bcrypt = require('bcrypt');\nconst { Schema } = mongoose;\n\nconst managerschema = new Schema({\n    ownername: {\n        type: String,\n        require: true\n    },\n    businessname: {\n        type: String,\n        require: true,\n    },\n    businesstype: {\n        type: String,\n        enum: ['Hotel', 'Valet', 'Bar', 'Restaurant', 'Salon', 'Non-Profit'],\n        require: true,\n    },\n    date: {\n        type: Date,\n        default: Date.now\n    },\n    email: {\n        type: String,\n        required: true,\n        trim: true,\n        // unique: [true, \"Email already Exists\"],\n        validate: {\n            validator: function (value) {\n                return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value);\n            },\n            message: 'Invalid email address'\n        }\n    },\n    phone: {\n        type: String,\n        required: true,\n        trim: true,\n        validate: {\n            validator: function (value) {\n                return /^\\d{10}$/.test(value);\n            },\n            message: 'Invalid mobile number'\n        }\n    },\n    username: {\n        type: String,\n        require: true,\n        unique: [true, \"Username already Exists\"],\n    },\n    password: {\n        type: String,\n        require: true,\n    }\n});\n\n// passord Hash\nmanagerschema.pre('save', async function (next) {\n    if (this.isModified(\"password\")) {\n        this.password = await bcrypt.hash(this.password, 10);\n        console.log(`Hashed Password : ${this.password}`);\n    }\n    next();\n})\n\nconst Manager = mongoose.model('manager', managerschema);\nmodule.exports = Manager;"
         },
         {
             "name": "package.json",

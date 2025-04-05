@@ -1,36 +1,39 @@
-config
-  └── db_config.js
-  └── env.py
-
-connections
-  └── mongodb_connection.js
-
-api
-  └── app.py
-
-auth
-  └── token_handler.py
-  └── user_auth.py
-  └── password_hasher.py
-
-db
-  └── services.js
-  └── count
-    └── schemas.py
-    └── management.py
+/
+server_setup
+  └── server_init.py
 
 models
-  └── employee.schema.js
-  └── manager
+  └── db_operations.py
+  └── session_schema.py
+  └── session_mongoose.py
+  └── employee_model.py
+  └── count
+    ├── model.py
     └── schema.py
-    └── model.py
-  └── session
-    └── schema.js
-    └── model.js
 
-services
-  └── email.py
-  └── staff
-    └── management.js
+middleware
+  └── auth
+    └── token_verification.py
+
+auth
+  ├── auth_services.py
+  └── manager_password.js
+
+email
+  └── email_services.py
+
+infrastructure
+  ├── data
+    └── models
+      └── count
+        └── model.py
+    └── schemas
+      └── count
+        └── schema.py
+
+src
+  └── mongo
+    ├── connector.js
+    └── constants.js
 
 package.json

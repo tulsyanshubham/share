@@ -1,35 +1,35 @@
 {
-    "db.js": [
-        "config/db_config.js",
-        "connections/mongodb_connection.js",
-        "services/db_services.js"
-    ],
     "index.js": [
-        "config/env.py",
-        "api/app.py",
-        "services/auth.py",
-        "services/email.py"
+        "server setup/server_init.py",
+        "models/db_operations.py",
+        "auth/auth_services.py",
+        "email/email_services.py"
+    ],
+    "db.js": [
+        "src/mongo/connector.js",
+        "src/mongo/constants.js"
     ],
     "middleware/fetchuser.js": [
-        "services/auth/token_handler.py",
-        "services/auth/user_auth.py"
-    ],
-    "modals/count.js": [
-        "services/db/count/schemas.py",
-        "services/db/count/management.py"
-    ],
-    "modals/employee.js": [
-        "models/employee.schema.js",
-        "services/staff.management.js"
+        "middleware/auth/token_verification.py",
+        "services/auth/user_auth_service.py"
     ],
     "modals/manager.js": [
-        "models/manager/schema.py",
-        "services/auth/password_hasher.py",
-        "models/manager/model.py"
+        "modals/manager/schema.js",
+        "auth/manager_password.js"
+    ],
+    "modals/employee.js": [
+        "services/models/employee_model.py",
+        "services/auth/user_credentials.py"
     ],
     "modals/session.js": [
-        "schemas/session.schema.js",
-        "models/session.model.js"
+        "models/session_schema.py",
+        "models/session_mongoose.py"
     ],
-    "package.json": []
+    "modals/count.js": [
+        "infrastructure/data/models/count/model.py",
+        "infrastructure/data/schemas/count/schema.py"
+    ],
+    "package.json": [
+        "package.json"
+    ]
 }
