@@ -1,35 +1,286 @@
 {
-    "index.js": [
-        "server setup/server_init.py",
-        "models/db_operations.py",
-        "auth/auth_services.py",
-        "email/email_services.py"
+    "api/controllers/review.controller.js": [
+        "api/services/review.dart",
+        "api/services/review.repository.dart"
     ],
-    "db.js": [
-        "src/mongo/connector.js",
-        "src/mongo/constants.js"
+    "api/controllers/tenant.controller.js": [
+        "api/controllers/tenant.controller.js"
     ],
-    "middleware/fetchuser.js": [
-        "middleware/auth/token_verification.py",
-        "services/auth/user_auth_service.py"
+    "api/controllers/vendor.controller.js": [
+        "api/controllers/vendor.creations.js",
+        "api/controllers/vendor.queries.js"
     ],
-    "modals/manager.js": [
-        "modals/manager/schema.js",
-        "auth/manager_password.js"
+    "api/controllers/request.controller.js": [
+        "services/requests/create_request.py",
+        "services/requests/get_request.py",
+        "services/requests/update_request_status.py"
     ],
-    "modals/employee.js": [
-        "services/models/employee_model.py",
-        "services/auth/user_credentials.py"
+    "api/controllers/auth.controller.js": [
+        "services/auth/user_management.py",
+        "services/auth/authentication.py"
     ],
-    "modals/session.js": [
-        "models/session_schema.py",
-        "models/session_mongoose.py"
+    "api/controllers/razorpay.controller.js": [
+        "services/razorpay/payment_handler.py",
+        "services/razorpay/ signature_verification.py"
     ],
-    "modals/count.js": [
-        "infrastructure/data/models/count/model.py",
-        "infrastructure/data/schemas/count/schema.py"
+    "api/models/user.model.js": [
+        "api/models/user.model.js"
+    ],
+    "api/controllers/user.controller.js": [
+        "api/controllers/user.crud.py",
+        "api/services/auth/user_auth.py"
+    ],
+    "api/controllers/listing.controller.js": [
+        "api/controllers/listing:create.js",
+        "api/controllers/listing:delete.js",
+        "api/controllers/listing:update.js",
+        "api/controllers/listing:get.js",
+        "api/controllers/listing:getListings.js"
+    ],
+    "api/models/tenant.model.js": [
+        "api/models/tenant.model.js"
+    ],
+    "api/models/request.model.js": [
+        "api/models/virtual/model/object.js",
+        "api/models/virtual/model/requests.js"
+    ],
+    "api/models/listing.model.js": [
+        "api/schemas/listing.schema.js",
+        "api/services/listing.service.js"
+    ],
+    "api/models/review.model.js": [
+        "api/models/review.model.js"
+    ],
+    "api/routes/listing.route.js": [
+        "api/routes/listing/CREATE_listing.py",
+        "api/routes/listing/UPDATE_listing.py",
+        "api/routes/listing/DELETE_listing.py",
+        "api/routes/listing/GET_listing.py",
+        "api/routes/listing/GET_listings.py"
+    ],
+    "api/index.js": [
+        "api/app.py",
+        "api/routes/auth.py",
+        "api/routes/user.py",
+        "api/routes/listing.py",
+        "api/routes/vendor.py",
+        "api/models/model.py"
+    ],
+    "api/routes/review.route.js": [
+        "api/routes/reviews/api.js",
+        "api/routes/reviews/webhooks.js"
+    ],
+    "api/routes/tenant.route.js": [
+        "api/routes/tenant.route.js"
+    ],
+    "api/routes/user.route.js": [
+        "services/auth/token_handler.py",
+        "services/user/user_endpoint.py"
+    ],
+    "api/routes/request.route.js": [
+        "api/services/requests/controller.py",
+        "api/routes/requests/rest_api.py"
+    ],
+    "api/routes/auth.route.js": [
+        "services/auth/auth.route.js",
+        "services/auth/auth.controller.js"
+    ],
+    "api/utils/verifyUser.js": [
+        "services/auth/session_handler.js",
+        "services/auth/token_handler.js"
+    ],
+    "api/routes/vendor.route.js": [
+        "api/controllers/vendor/api.routers.py",
+        "api/controllers/vendor/ authentication.routers.py"
+    ],
+    "api/utils/error.js": [
+        "services/error-handling.js"
+    ],
+    "client/index.html": [
+        "client/index.html"
+    ],
+    "client/src/App.jsx": [
+        "client/src/components/Header.jsx",
+        "client/src/components/Footer.jsx",
+        "client/src/routes/LandingRoute.jsx",
+        "client/src/pages/SignedInRoute.jsx"
+    ],
+    "client/src/components/CommentForm.jsx": [
+        "services/comment/comment_form_service.py",
+        "components/forms/textarea_input.py",
+        "services/sessions/session_handler.py"
+    ],
+    "client/.eslintrc.cjs": [
+        "client/.eslintrc.cjs"
+    ],
+    "client/postcss.config.js": [
+        "client/assets/config/postcss.config.py"
+    ],
+    "client/src/components/Footer.jsx": [
+        "client/src/components/Footer/logo.jsx",
+        "client/src/components/Footer/navbar.jsx",
+        "client/src/components/Footer/socialLinks.jsx",
+        "client/src/components/Footer/contactInfo.jsx"
+    ],
+    "client/package.json": [
+        "client/package.json"
+    ],
+    "client/src/components/Loader.jsx": [
+        "client/src/components/Loader.jsx"
+    ],
+    "client/src/components/PrivateRoute.jsx": [
+        "services/auth/private_route_handler.py"
+    ],
+    "client/src/components/Card.jsx": [
+        "client/src/components/Card.layout.jsx",
+        "client/src/components/Card.data.jsx"
+    ],
+    "client/src/components/About.jsx": [
+        "components/about/slider/slider.jsx",
+        "components/about/cards/card_container.jsx",
+        "components/about/cards/card.jsx"
+    ],
+    "client/src/components/LandlordContact.jsx": [
+        "client/src/components/components/LandlordContactInfo.jsx",
+        "client/src/components/components/LandlordContactForm.jsx"
+    ],
+    "client/src/components/MapSearch.jsx": [
+        "client/src/components/map/renderer.py",
+        "client/src/services/map/map_services.py",
+        "client/src/components/map/search_results.py"
+    ],
+    "client/src/components/PaymentButton.jsx": [
+        "client/src/components/PaymentButton.jsx"
+    ],
+    "client/src/components/OAuth.jsx": [
+        "client/src/services/oauth/googleAuth.py",
+        "client/src/services/oauth/tokenHandler.py"
+    ],
+    "client/src/components/SearchBar.css": [
+        "client/src/components/SearchBar.css"
+    ],
+    "client/src/main.jsx": [
+        "client/src/graphql.js",
+        "client/src/index.js"
+    ],
+    "client/src/components/Statistics.jsx": [
+        "client/src/services/chart/data_loader.py",
+        "client/src/services/chart/chart_renderer.py",
+        "client/src/services/chart/graph_utils.py"
+    ],
+    "client/src/components/SearchBar.jsx": [
+        "client/src/components/search/SearchBarComponent.jsx",
+        "client/src/components/search/SearchBar.css"
+    ],
+    "client/src/components/Map.jsx": [
+        "client/src/components/map/constants.js",
+        "client/src/components/map/mapContainer.js",
+        "client/src/components/map/marker.js"
+    ],
+    "client/src/index.css": [
+        "client/src/index.css"
+    ],
+    "client/src/pages/Search.jsx": [
+        "client/src/components/Card.jsx",
+        "client/src/services/search/search.service.js"
+    ],
+    "client/src/pages/SignIn.jsx": [
+        "components/forms/SignInForm.jsx",
+        "components/SignInComponent.jsx",
+        "services/auth/signInService.js"
+    ],
+    "client/src/pages/Land.jsx": [
+        "client/src/pages/LandMain.jsx",
+        "client/src/components/LandComponents.jsx"
+    ],
+    "client/src/pages/search.css": [
+        "client/src/pages/search.css"
+    ],
+    "client/src/firebase.js": [
+        "services/firebase/firebase_config.py",
+        "services/firebase/firebase_init.py"
+    ],
+    "client/src/pages/profile.css": [
+        "client/src/pages/profile.css"
+    ],
+    "client/src/pages/About.jsx": [
+        "client/src/components/AboutSection.jsx",
+        "client/src/components/MissionStatement.jsx",
+        "client/src/components/WhyChooseUs.jsx"
+    ],
+    "client/src/pages/Property.jsx": [
+        "client/src/services/PropertyDetailsService.js",
+        "client/src/components/PropertyCard.js",
+        "client/src/services/BookingService.js"
+    ],
+    "client/src/pages/property.css": [
+        "client/src/pages/property.css"
+    ],
+    "client/src/pages/userDash/side.css": [
+        "client/src/pages/userDash/side.css"
+    ],
+    "client/src/pages/userDash/Yourlisting.jsx": [],
+    "client/src/pages/userDash/Side.jsx": [
+        "features/user/sidebar/sidebar_links.py",
+        "features/user/sidebar/sidebar_renderer.py"
+    ],
+    "client/src/pages/BuildProfile.jsx": [
+        "client/src/services/auth/BuildProfileAuth.js",
+        "client/src/components/BuildProfileForm.js",
+        "client/src/services/image/AadhaarUpload.js"
+    ],
+    "client/src/pages/userDash/Showstatus.jsx": [
+        "services/data/fetch_properties.py",
+        "components/properties_list.py",
+        "components/profile_handler.py"
+    ],
+    "client/src/pages/userDash/Shownest.jsx": [
+        "client/src/components/UserData.js",
+        "client/src/components/VendorData.js",
+        "client/src/components/CommentHandler.js",
+        "client/src/pages/userDash/Loader.js"
+    ],
+    "client/src/pages/RegisterVendor.jsx": [
+        "client/src/components/VendorForm.jsx",
+        "client/src/components/VendorDetails.jsx"
+    ],
+    "client/src/pages/vend.css": [
+        "client/src/pages/components.css"
+    ],
+    "client/src/pages/vendor/Dash.css": [
+        "client/src/pages/vendor/Dash.css"
+    ],
+    "client/src/pages/vendor/Showtenant.jsx": [
+        "client/src/services/api/tenant_api.py",
+        "client/src/components/TenantList.py",
+        "client/src/components/TenantStatus.py"
+    ],
+    "client/src/pages/vendor/Dash.jsx": [
+        "client/src/pages/vendor/Dash.jsx"
+    ],
+    "client/src/url.jsx": [
+        "client/src/url.jsx"
+    ],
+    "client/vite.config.js": [
+        "client/vite.config.js"
+    ],
+    "client/tailwind.config.js": [
+        "client/tailwind.config.js"
     ],
     "package.json": [
         "package.json"
+    ],
+    "client/src/redux/user/userSlice.js": [
+        "services/auth/user_auth.py",
+        "services/user/user_manager.py"
+    ],
+    "client/src/pages/vendor/showlist.css": [
+        "client/src/pages/vendor/showlist.css"
+    ],
+    "client/src/redux/store.js": [
+        "client/src/redux/store.js"
+    ],
+    "client/src/pages/video.mp4": [
+        "client/src/pages/video.mp4"
     ]
 }

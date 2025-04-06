@@ -1,0 +1,30 @@
+services
+  └── auth
+    ├── manager_schema.py
+    ├── password_handler.py
+    └── token_validator.py
+    └── user_auth.py
+infrastructure
+  └── mongo
+    ├── connect.py
+    └── config.py
+domain
+  ├── models
+  │ └── session_model.py
+  └── schemas
+    └── session_schema.py
+modals
+  ├── employee.js
+  └── count
+    ├── model.py
+    └── Schema.py
+models
+  └── session_manager.py
+config
+  └── express_config.js
+routes
+  └── api_routes.py
+package
+  ├── config.json
+  ├── dependencies.json
+  └── executable.json

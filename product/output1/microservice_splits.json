@@ -1,0 +1,37 @@
+{
+    "middleware/fetchuser.js": [
+        "services/auth/token_validator.py",
+        "services/auth/user_auth_handler.py"
+    ],
+    "modals/session.js": [
+        "domain/models/session_model.py",
+        "domain/schemas/session_schema.py"
+    ],
+    "db.js": [
+        "infrastructure/mongo/connect.py",
+        "infrastructure/mongo/config.py"
+    ],
+    "modals/employee.js": [
+        "modals/employee.js"
+    ],
+    "modals/count.js": [
+        "models/count/model.py",
+        "models/count/Schema.py"
+    ],
+    "modals/manager.js": [
+        "services/auth/manager_schema.py",
+        "services/auth/password_handler.py"
+    ],
+    "index.js": [
+        "config/express_config.js",
+        "services/auth/user_auth.py",
+        "services/email/send_email.py",
+        "models/session_manager.py",
+        "routes/api_routes.py"
+    ],
+    "package.json": [
+        "package/config.json",
+        "package/dependencies.json",
+        "package/executable.json"
+    ]
+}
