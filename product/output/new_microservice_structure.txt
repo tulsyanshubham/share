@@ -1,81 +1,30 @@
-api
-  └── services
-    └── review
-      ├── review.dart
-      └── review.repository.dart
-  └── controllers
-    ├── tenant.controller.js
-    └── vendor
-      ├── creations.js
-      └── queries.js
-  └── models
-    ├── user.model.js
-    └── tenant.model.js
-  └── routes
-    ├── listing
-      ├── CREATE_listing.py
-      ├── UPDATE_listing.py
-      ├── DELETE_listing.py
-      ├── GET_listing.py
-      └── GET_listings.py
-    └── reviews
-      ├── api.js
-      └── webhooks.js
-    └── tenant.route.js
-    ├── auth.py
-    ├── user.py
-    ├── listing.py
-    ├── vendor.py
-    └── model.py
-  └── app.py
-  └── index.js
-
-client
-  └── index.html
-  └── src
-    ├── components
-      ├── Header.jsx
-      └── Footer.jsx
-    ├── routes
-      └── LandingRoute.jsx
-    ├── pages
-      ├── SignedInRoute.jsx
-    ├── ABOUT
-      ├── slider
-        └── slider.jsx
-      ├── cards
-        ├── card_container.jsx
-        └── card.jsx
-    ├── LAYOUTS
-      ├── Card.layout.jsx
-      └── Card.data.jsx
-    ├── UTILS
-      ├── BuildProfileForm.js
-      └── BuildingProfile.js
-    ├── SERVICES
-      ├── auth
-        ├── user_auth.py
-        └── user_manager.py
-      └── map
-        ├── renderer.py
-        └── map_services.py
-    ├── chart
-      ├── data_loader.py
-      └── chart_renderer.py
-    ├── search
-      ├── SearchBarComponent.jsx
-      └── SearchBar.css
-    ├── map
-      ├── constants.js
-      ├── mapContainer.js
-      └── marker.js
-    └── index.css
-
-other_files.py
-
-package.json
-client/.eslintrc.cjs
-client/assets/config/postcss.config.js
-client/vite.config.js
-client/tailwind.config.js
-README.md
+services
+  └── auth
+    ├── manager_schema.py
+    ├── password_handler.py
+    └── token_validator.py
+    └── user_auth.py
+infrastructure
+  └── mongo
+    ├── connect.py
+    └── config.py
+domain
+  ├── models
+  │ └── session_model.py
+  └── schemas
+    └── session_schema.py
+modals
+  ├── employee.js
+  └── count
+    ├── model.py
+    └── Schema.py
+models
+  └── session_manager.py
+config
+  └── express_config.js
+routes
+  └── api_routes.py
+package
+  ├── config.json
+  ├── dependencies.json
+  └── executable.json

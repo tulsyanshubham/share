@@ -1,0 +1,34 @@
+{
+    "middleware/fetchuser.js": {
+        "services/auth/user_auth.py": "Handles user authentication and session management.",
+        "services/auth/token_handler.py": "Manages JWT token generation and validation."
+    },
+    "db.js": {
+        "services/db/db_connector.py": "Handles the database connection setup and management."
+    },
+    "index.js": {
+        "config/env.js": " Loads environment variables and app configurations.",
+        "app.js": "Initializes the Express application with necessary middleware and routes.",
+        "auth/mailer.js": "Handles sending password reset emails to users.",
+        "routes.js": "Defines API routes for the application.",
+        "middleware.js": "Sets up Express middleware for authentication, CORS, and request body parsing."
+    },
+    "modals/session.js": {
+        "models/session_schema.py": "Defines the session schema using Mongoose.",
+        "services/session_management.py": "Handles session creation, retrieval, and deletion."
+    },
+    "modals/employee.js": {
+        "modals/employee.js": "This file does not need splitting and remains unchanged."
+    },
+    "modals/count.js": {
+        "models/count/schema.js": "Defines the JSON schema for the count model.",
+        "models/count/model.js": "Handles the business logic and operations for the count model."
+    },
+    "package.json": {
+        "package.json": "This file does not need splitting and remains unchanged."
+    },
+    "modals/manager.js": {
+        "services/schema/default_manager.py": "Defines the manager schema for Mongoose model.",
+        "services/encryption/password_hasher.py": "Handles password hashing and encryption for manager model."
+    }
+}
