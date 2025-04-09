@@ -53,7 +53,7 @@ def repo_scan(repo_url="https://github.com/tulsyanshubham/TipyDo-Backend.git"):
     HEADERS = {"Authorization": f"token {GITHUB_TOKEN}"}
 
     DEFAULT_BRANCH = get_default_branch(GITHUB_REPO,HEADERS)
-    print(f"Default branch: {DEFAULT_BRANCH}")
+    print(f"[INFO] Default branch: {DEFAULT_BRANCH}")
 
     file_data_lock = threading.Lock()
     dependencies_lock = threading.Lock()
@@ -72,7 +72,7 @@ def repo_scan(repo_url="https://github.com/tulsyanshubham/TipyDo-Backend.git"):
                     file_queue.task_done()
                     break
                     
-                print(f"[INFO] Processing file: {item['path']}")
+                print(f"[INFO] Reading file: {item['path']}")
                 name = item["name"]
                 ext = "." + name.split(".")[-1] if "." in name else ""
 

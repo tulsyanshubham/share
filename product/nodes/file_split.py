@@ -116,6 +116,7 @@ def worker(queue, file_list, microservices, file_descriptions, lock):
         """
 
         try:
+            print(f"[INFO] Processing file: {file['name']}")
             json_output = call_groq(prompt)
 
             json_match = re.search(r"\{.*\}", json_output, re.DOTALL)
