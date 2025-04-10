@@ -1,0 +1,1381 @@
+[
+  {
+    "file_name": "BookStoreApplication.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\BookStoreApplication.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "org.springframework.boot.autoconfigure.SpringBootApplication",
+      "org.springframework.boot.SpringApplication"
+    ],
+    "functions": [
+      {
+        "name": "main",
+        "description": "The main function which starts the Spring Boot application.",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "Cart.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\web\\Cart.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "java.math.BigDecimal"
+    ],
+    "functions": [
+      {
+        "name": "getItem",
+        "description": "Returns the LineItem object stored in the 'item' field.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setItem",
+        "description": "Sets the LineItem object to the 'item' field.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getTotalAmount",
+        "description": "Returns the total amount of the item in the cart by multiplying the price and quantity of the item. If the item is null, it returns zero.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "removeItem",
+        "description": "Sets the 'item' field to null, effectively removing the item from the cart.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "updateItemQuantity",
+        "description": "Updates the quantity of the item in the cart. If the quantity is less than or equal to zero, it removes the item from the cart.",
+        "internal_dependencies": [
+          "removeItem"
+        ]
+      },
+      {
+        "name": "LineItem",
+        "description": "A static inner class representing a line item in the cart. It has fields for code, name, price, and quantity, along with their corresponding getter and setter methods.",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "CreateOrderResponse.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\CreateOrderResponse.java",
+    "internal_dependencies": [],
+    "external_dependencies": [],
+    "functions": []
+  },
+  {
+    "file_name": "Customer.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\domain\\models\\Customer.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "jakarta.validation.constraints.Email",
+      "jakarta.validation.constraints.NotBlank"
+    ],
+    "functions": []
+  },
+  {
+    "file_name": "InvalidOrderException.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\InvalidOrderException.java",
+    "internal_dependencies": [],
+    "external_dependencies": [],
+    "functions": [
+      {
+        "name": "InvalidOrderException",
+        "description": "Constructor for the InvalidOrderException class. It takes a string message as an argument and passes it to the superclass constructor.",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "InventoryEntity.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\inventory\\InventoryEntity.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "jakarta.persistence.Entity",
+      "jakarta.persistence.SequenceGenerator",
+      "jakarta.persistence.GeneratedValue",
+      "jakarta.persistence.Id",
+      "jakarta.persistence.Column",
+      "jakarta.validation.constraints.NotEmpty",
+      "jakarta.persistence.GenerationType",
+      "jakarta.persistence.Table"
+    ],
+    "functions": [
+      {
+        "name": "getId",
+        "description": "This function returns the id of the inventory entity.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setId",
+        "description": "This function sets the id of the inventory entity.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getProductCode",
+        "description": "This function returns the product code of the inventory entity.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setProductCode",
+        "description": "This function sets the product code of the inventory entity.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getQuantity",
+        "description": "This function returns the quantity of the inventory entity.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setQuantity",
+        "description": "This function sets the quantity of the inventory entity.",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "OrderForm.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\web\\OrderForm.java",
+    "internal_dependencies": [
+      "Customer.java"
+    ],
+    "external_dependencies": [
+      "jakarta.validation.Valid",
+      "jakarta.validation.constraints.NotEmpty"
+    ],
+    "functions": []
+  },
+  {
+    "file_name": "OrderItem.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\domain\\models\\OrderItem.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "jakarta.validation.constraints.NotNull",
+      "java.math.BigDecimal",
+      "jakarta.validation.constraints.Min",
+      "jakarta.validation.constraints.NotBlank"
+    ],
+    "functions": []
+  },
+  {
+    "file_name": "OrderNotFoundException.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\OrderNotFoundException.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "RuntimeException"
+    ],
+    "functions": [
+      {
+        "name": "OrderNotFoundException",
+        "description": "This is a constructor function that takes a message as an argument and passes it to the superclass constructor.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "forOrderNumber",
+        "description": "This is a static method that takes an orderNumber as an argument and returns a new instance of OrderNotFoundException with a custom message.",
+        "internal_dependencies": [
+          "OrderNotFoundException"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrderService.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\domain\\OrderService.java",
+    "internal_dependencies": [
+      "OrderCreatedEvent.java",
+      "OrderRepository.java",
+      "OrderEntity.java"
+    ],
+    "external_dependencies": [
+      "org.slf4j.Logger",
+      "org.springframework.stereotype.Service",
+      "org.slf4j.LoggerFactory",
+      "org.springframework.transaction.annotation.Transactional",
+      "org.springframework.data.domain.Sort",
+      "org.springframework.context.ApplicationEventPublisher",
+      "java.util.List",
+      "java.util.Optional"
+    ],
+    "functions": [
+      {
+        "name": "OrderService",
+        "description": "Constructor for the OrderService class. It initializes the orderRepository and eventPublisher objects.",
+        "internal_dependencies": [
+          "OrderRepository.java"
+        ]
+      },
+      {
+        "name": "createOrder",
+        "description": "This function creates an order, logs the creation, creates an OrderCreatedEvent, publishes the event, and then returns the saved order.",
+        "internal_dependencies": [
+          "OrderEntity.java",
+          "OrderCreatedEvent.java",
+          "OrderRepository.java"
+        ]
+      },
+      {
+        "name": "findOrder",
+        "description": "This function finds an order by its order number and returns it.",
+        "internal_dependencies": [
+          "OrderEntity.java",
+          "OrderRepository.java"
+        ]
+      },
+      {
+        "name": "findOrders",
+        "description": "This function finds all orders, sorts them by id in descending order, and returns them.",
+        "internal_dependencies": [
+          "OrderEntity.java",
+          "OrderRepository.java"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrderStatus.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\domain\\models\\OrderStatus.java",
+    "internal_dependencies": [],
+    "external_dependencies": [],
+    "functions": []
+  },
+  {
+    "file_name": "OrderWebController.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\web\\OrderWebController.java",
+    "internal_dependencies": [],
+    "external_dependencies": [],
+    "functions": []
+  },
+  {
+    "file_name": "PagedResult.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\common\\models\\PagedResult.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "org.springframework.data.domain.Page",
+      "java.util.List",
+      "java.util.function.Function"
+    ],
+    "functions": [
+      {
+        "name": "PagedResult",
+        "description": "A constructor that takes a Page object and initializes the PagedResult object with its properties.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "of",
+        "description": "A static method that takes a PagedResult object and a Function object. It applies the function to every element in the data list of the PagedResult object and returns a new PagedResult object with the transformed data list and the same other properties.",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "ProductDto.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\catalog\\ProductDto.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "java.math.BigDecimal"
+    ],
+    "functions": [
+      {
+        "name": "getDisplayName",
+        "description": "This function returns the product name if its length is less than or equal to 20. If the product name is longer than 20 characters, it returns the first 20 characters followed by '...'.",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "ProductEntity.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\catalog\\domain\\ProductEntity.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "java.math.BigDecimal",
+      "jakarta.validation.constraints.NotNull",
+      "jakarta.persistence.Entity",
+      "jakarta.persistence.SequenceGenerator",
+      "jakarta.persistence.GeneratedValue",
+      "jakarta.persistence.Id",
+      "jakarta.persistence.Column",
+      "jakarta.validation.constraints.NotEmpty",
+      "jakarta.persistence.GenerationType",
+      "jakarta.validation.constraints.DecimalMin",
+      "jakarta.persistence.Table"
+    ],
+    "functions": [
+      {
+        "name": "getId",
+        "description": "This function returns the id of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setId",
+        "description": "This function sets the id of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getCode",
+        "description": "This function returns the code of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setCode",
+        "description": "This function sets the code of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getName",
+        "description": "This function returns the name of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setName",
+        "description": "This function sets the name of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getDescription",
+        "description": "This function returns the description of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setDescription",
+        "description": "This function sets the description of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getImageUrl",
+        "description": "This function returns the image URL of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setImageUrl",
+        "description": "This function sets the image URL of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getPrice",
+        "description": "This function returns the price of the product.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setPrice",
+        "description": "This function sets the price of the product.",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "ProductNotFoundException.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\catalog\\domain\\ProductNotFoundException.java",
+    "internal_dependencies": [],
+    "external_dependencies": [],
+    "functions": [
+      {
+        "name": "ProductNotFoundException",
+        "description": "This is a constructor function that takes a string message as an argument and passes it to the superclass constructor.",
+        "internal_dependencies": []
+      },
+      {
+        "name": "forCode",
+        "description": "This is a static method that takes a string code as an argument, creates a new instance of ProductNotFoundException with a custom message, and returns it.",
+        "internal_dependencies": [
+          "ProductNotFoundException"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "RabbitMQConfig.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\config\\RabbitMQConfig.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "org.springframework.amqp.support.converter.Jackson2JsonMessageConverter",
+      "org.springframework.context.annotation.Bean",
+      "org.springframework.amqp.core.BindingBuilder",
+      "org.springframework.amqp.rabbit.connection.ConnectionFactory",
+      "org.springframework.context.annotation.Configuration",
+      "com.fasterxml.jackson.databind.ObjectMapper",
+      "org.springframework.amqp.core.Queue",
+      "org.springframework.amqp.rabbit.core.RabbitTemplate",
+      "org.springframework.amqp.core.TopicExchange",
+      "org.springframework.amqp.core.Binding"
+    ],
+    "functions": [
+      {
+        "name": "exchange",
+        "description": "This function returns a new instance of TopicExchange with the name defined by the constant EXCHANGE_NAME.",
+        "internal_dependencies": [
+          "EXCHANGE_NAME"
+        ]
+      },
+      {
+        "name": "newOrdersQueue",
+        "description": "This function returns a new instance of Queue with the name defined by the constant QUEUE_NAME and durability set to false.",
+        "internal_dependencies": [
+          "QUEUE_NAME"
+        ]
+      },
+      {
+        "name": "newOrdersQueueBinding",
+        "description": "This function returns a new instance of Binding that binds the provided Queue and TopicExchange with the routing key defined by the constant ROUTING_KEY.",
+        "internal_dependencies": [
+          "ROUTING_KEY"
+        ]
+      },
+      {
+        "name": "rabbitTemplate",
+        "description": "This function returns a new instance of RabbitTemplate with the provided ConnectionFactory and sets the message converter to the one returned by the producerJackson2MessageConverter function with the provided ObjectMapper.",
+        "internal_dependencies": [
+          "producerJackson2MessageConverter"
+        ]
+      },
+      {
+        "name": "producerJackson2MessageConverter",
+        "description": "This function returns a new instance of Jackson2JsonMessageConverter with the provided ObjectMapper.",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "TestBookStoreApplication.java",
+    "file_path": "monolith_code\\src\\test\\java\\com\\sivalabs\\bookstore\\TestBookStoreApplication.java",
+    "internal_dependencies": [
+      "TestcontainersConfiguration.java",
+      "BookStoreApplication.java"
+    ],
+    "external_dependencies": [
+      "org.springframework.boot.SpringApplication"
+    ],
+    "functions": [
+      {
+        "name": "main",
+        "description": "The main entry point for the application. It uses SpringApplication to start the BookStoreApplication with TestcontainersConfiguration.",
+        "internal_dependencies": [
+          "BookStoreApplication.java",
+          "TestcontainersConfiguration.java"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "TestcontainersConfiguration.java",
+    "file_path": "monolith_code\\src\\test\\java\\com\\sivalabs\\bookstore\\TestcontainersConfiguration.java",
+    "internal_dependencies": [],
+    "external_dependencies": [
+      "org.testcontainers.containers.RabbitMQContainer",
+      "org.springframework.context.annotation.Bean",
+      "org.testcontainers.junit.jupiter.Container",
+      "org.springframework.boot.testcontainers.service.connection.ServiceConnection",
+      "org.testcontainers.utility.DockerImageName",
+      "org.testcontainers.junit.jupiter.Testcontainers",
+      "org.testcontainers.containers.PostgreSQLContainer",
+      "org.testcontainers.containers.GenericContainer",
+      "org.springframework.boot.test.context.TestConfiguration"
+    ],
+    "functions": [
+      {
+        "name": "postgresContainer",
+        "description": "This function returns a PostgreSQLContainer object",
+        "internal_dependencies": []
+      },
+      {
+        "name": "rabbitmq",
+        "description": "This function returns a RabbitMQContainer object",
+        "internal_dependencies": []
+      },
+      {
+        "name": "zipkinContainer",
+        "description": "This function returns a GenericContainer object",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "CartUtil.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\web\\CartUtil.java",
+    "internal_dependencies": [
+      "Cart"
+    ],
+    "external_dependencies": [
+      "jakarta.servlet.http.HttpSession"
+    ],
+    "functions": [
+      {
+        "name": "getCart",
+        "description": "This function retrieves a 'Cart' object from the HttpSession. If the 'Cart' object is null, it creates a new 'Cart' object.",
+        "internal_dependencies": [
+          "Cart"
+        ]
+      },
+      {
+        "name": "CartUtil",
+        "description": "This is a private constructor to prevent instantiation of the utility class.",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "OrderCreatedEvent.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\domain\\models\\OrderCreatedEvent.java",
+    "internal_dependencies": [
+      "Customer"
+    ],
+    "external_dependencies": [
+      "com.sivalabs.bookstore.orders.domain.models",
+      "org.springframework.modulith.events.Externalized"
+    ],
+    "functions": []
+  },
+  {
+    "file_name": "InventoryRepository.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\inventory\\InventoryRepository.java",
+    "internal_dependencies": [
+      "InventoryEntity"
+    ],
+    "external_dependencies": [
+      "org.springframework.data.jpa.repository.JpaRepository",
+      "java.util.Optional"
+    ],
+    "functions": [
+      {
+        "name": "findByProductCode",
+        "description": "A function that finds an InventoryEntity by its product code. Returns an Optional that contains the InventoryEntity if it exists, or is empty if it does not.",
+        "internal_dependencies": [
+          "InventoryEntity"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "CreateOrderRequest.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\CreateOrderRequest.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.orders.domain.models.OrderItem",
+      "com.sivalabs.bookstore.orders.domain.models.Customer"
+    ],
+    "external_dependencies": [
+      "jakarta.validation.Valid",
+      "jakarta.validation.constraints.NotEmpty"
+    ],
+    "functions": [
+      {
+        "name": "CreateOrderRequest",
+        "description": "This is a record constructor that creates a new instance of CreateOrderRequest. It takes three parameters: a valid Customer object, a non-empty delivery address string, and a valid OrderItem object.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.models.Customer",
+          "com.sivalabs.bookstore.orders.domain.models.OrderItem"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrdersExceptionHandler.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\web\\OrdersExceptionHandler.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.orders.OrderNotFoundException",
+      "com.sivalabs.bookstore.orders.InvalidOrderException"
+    ],
+    "external_dependencies": [
+      "org.springframework.web.bind.annotation.RestControllerAdvice",
+      "org.springframework.web.bind.annotation.ExceptionHandler",
+      "org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler",
+      "org.springframework.http.ProblemDetail",
+      "org.springframework.http.HttpStatus",
+      "java.time.Instant"
+    ],
+    "functions": [
+      {
+        "name": "handle",
+        "description": "Handles OrderNotFoundException by returning a ProblemDetail object with relevant information.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.OrderNotFoundException"
+        ]
+      },
+      {
+        "name": "handle",
+        "description": "Handles InvalidOrderException by returning a ProblemDetail object with relevant information.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.InvalidOrderException"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrderDto.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\OrderDto.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.orders.domain.models.OrderItem",
+      "com.sivalabs.bookstore.orders.domain.models.OrderStatus",
+      "com.sivalabs.bookstore.orders.domain.models.Customer"
+    ],
+    "external_dependencies": [
+      "java.math.BigDecimal",
+      "java.time.LocalDateTime",
+      "com.fasterxml.jackson.annotation.JsonProperty"
+    ],
+    "functions": [
+      {
+        "name": "getTotalAmount",
+        "description": "This function returns the total amount of the order by multiplying the price of the item with its quantity. It uses the 'OrderItem' internal dependency.",
+        "internal_dependencies_used": [
+          "com.sivalabs.bookstore.orders.domain.models.OrderItem"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrderEntity.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\domain\\OrderEntity.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.orders.domain.models.OrderItem",
+      "com.sivalabs.bookstore.orders.domain.models.OrderStatus",
+      "com.sivalabs.bookstore.orders.domain.models.Customer"
+    ],
+    "external_dependencies": [
+      "jakarta.persistence.Entity",
+      "java.time.LocalDateTime",
+      "jakarta.persistence.SequenceGenerator",
+      "jakarta.persistence.GeneratedValue",
+      "jakarta.persistence.Id",
+      "jakarta.persistence.AttributeOverrides",
+      "jakarta.persistence.Column",
+      "jakarta.persistence.Embedded",
+      "jakarta.persistence.EnumType",
+      "jakarta.persistence.Enumerated",
+      "jakarta.persistence.GenerationType",
+      "jakarta.persistence.Table",
+      "jakarta.persistence.AttributeOverride"
+    ],
+    "functions": [
+      {
+        "name": "OrderEntity",
+        "description": "Default constructor for OrderEntity class",
+        "internal_dependencies": []
+      },
+      {
+        "name": "OrderEntity",
+        "description": "Overloaded constructor for OrderEntity class",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.models.Customer",
+          "com.sivalabs.bookstore.orders.domain.models.OrderItem",
+          "com.sivalabs.bookstore.orders.domain.models.OrderStatus"
+        ]
+      },
+      {
+        "name": "getId",
+        "description": "Getter for 'id' property",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setId",
+        "description": "Setter for 'id' property",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getOrderNumber",
+        "description": "Getter for 'orderNumber' property",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setOrderNumber",
+        "description": "Setter for 'orderNumber' property",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getCustomer",
+        "description": "Getter for 'customer' property",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.models.Customer"
+        ]
+      },
+      {
+        "name": "setCustomer",
+        "description": "Setter for 'customer' property",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.models.Customer"
+        ]
+      },
+      {
+        "name": "getDeliveryAddress",
+        "description": "Getter for 'deliveryAddress' property",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setDeliveryAddress",
+        "description": "Setter for 'deliveryAddress' property",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getOrderItem",
+        "description": "Getter for 'orderItem' property",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.models.OrderItem"
+        ]
+      },
+      {
+        "name": "setOrderItem",
+        "description": "Setter for 'orderItem' property",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.models.OrderItem"
+        ]
+      },
+      {
+        "name": "getStatus",
+        "description": "Getter for 'status' property",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.models.OrderStatus"
+        ]
+      },
+      {
+        "name": "setStatus",
+        "description": "Setter for 'status' property",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.models.OrderStatus"
+        ]
+      },
+      {
+        "name": "getCreatedAt",
+        "description": "Getter for 'createdAt' property",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setCreatedAt",
+        "description": "Setter for 'createdAt' property",
+        "internal_dependencies": []
+      },
+      {
+        "name": "getUpdatedAt",
+        "description": "Getter for 'updatedAt' property",
+        "internal_dependencies": []
+      },
+      {
+        "name": "setUpdatedAt",
+        "description": "Setter for 'updatedAt' property",
+        "internal_dependencies": []
+      }
+    ]
+  },
+  {
+    "file_name": "OrderView.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\OrderView.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.orders.domain.models.OrderStatus",
+      "com.sivalabs.bookstore.orders.domain.models.Customer"
+    ],
+    "external_dependencies": [],
+    "functions": [
+      {
+        "name": "OrderView",
+        "description": "A record class that represents an OrderView. It has three fields: orderNumber of type String, status of type OrderStatus, and customer of type Customer.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.models.Customer",
+          "com.sivalabs.bookstore.orders.domain.models.OrderStatus"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "ProductMapper.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\catalog\\mappers\\ProductMapper.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.catalog.ProductDto",
+      "com.sivalabs.bookstore.catalog.domain.ProductEntity"
+    ],
+    "external_dependencies": [
+      "org.springframework.stereotype.Component"
+    ],
+    "functions": [
+      {
+        "name": "mapToDto",
+        "description": "This function takes a ProductEntity object as an argument and returns a new ProductDto object with the same properties.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.catalog.ProductDto",
+          "com.sivalabs.bookstore.catalog.domain.ProductEntity"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "ProductRepository.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\catalog\\domain\\ProductRepository.java",
+    "internal_dependencies": [
+      "ProductEntity"
+    ],
+    "external_dependencies": [
+      "org.springframework.data.jpa.repository.JpaRepository",
+      "java.util.Optional"
+    ],
+    "functions": [
+      {
+        "name": "findByCode",
+        "description": "This function takes a String 'code' as an argument and returns an Optional of type ProductEntity. It is used to find a product by its code.",
+        "internal_dependencies": [
+          "ProductEntity"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "CatalogExceptionHandler.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\catalog\\web\\CatalogExceptionHandler.java",
+    "internal_dependencies": [
+      "ProductNotFoundException"
+    ],
+    "external_dependencies": [
+      "org.springframework.web.bind.annotation.RestControllerAdvice",
+      "org.springframework.web.bind.annotation.ExceptionHandler",
+      "org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler",
+      "org.springframework.http.ProblemDetail",
+      "org.springframework.http.HttpStatus",
+      "java.time.Instant"
+    ],
+    "functions": [
+      {
+        "name": "handle",
+        "description": "This function handles the ProductNotFoundException. It creates a ProblemDetail object with the status NOT_FOUND and the error message from the exception. It also sets the title of the problem detail to 'Product Not Found' and adds a timestamp property with the current time. Finally, it returns the ProblemDetail object.",
+        "internal_dependencies": [
+          "ProductNotFoundException"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrderEventNotificationHandler.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\notifications\\OrderEventNotificationHandler.java",
+    "internal_dependencies": [
+      "OrderCreatedEvent"
+    ],
+    "external_dependencies": [
+      "org.springframework.modulith.events",
+      "org.slf4j",
+      "com.sivalabs.bookstore.orders.domain.models",
+      "org.springframework.stereotype"
+    ],
+    "functions": [
+      {
+        "name": "handle",
+        "description": "This function handles the event when an order is created. It logs the information of the created order event.",
+        "internal_dependencies": [
+          "OrderCreatedEvent"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "InventoryService.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\inventory\\InventoryService.java",
+    "internal_dependencies": [
+      "InventoryRepository",
+      "InventoryEntity"
+    ],
+    "external_dependencies": [
+      "org.slf4j.Logger",
+      "org.springframework.stereotype.Service",
+      "org.springframework.transaction.annotation.Transactional",
+      "org.slf4j.LoggerFactory"
+    ],
+    "functions": [
+      {
+        "name": "InventoryService",
+        "description": "Constructor function for the InventoryService class. It initializes the InventoryRepository instance.",
+        "internal_dependencies": [
+          "InventoryRepository"
+        ]
+      },
+      {
+        "name": "decreaseStockLevel",
+        "description": "This function decreases the stock level of a product by a certain quantity. It fetches the current inventory of the product, decreases the quantity, and saves the updated inventory. If the product code is invalid, it logs a warning.",
+        "internal_dependencies": [
+          "InventoryRepository",
+          "InventoryEntity"
+        ]
+      },
+      {
+        "name": "getStockLevel",
+        "description": "This function returns the current stock level of a product. It fetches the current inventory of the product and returns the quantity. If the product code is invalid, it returns 0.",
+        "internal_dependencies": [
+          "InventoryRepository",
+          "InventoryEntity"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrderRepository.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\domain\\OrderRepository.java",
+    "internal_dependencies": [
+      "OrderEntity"
+    ],
+    "external_dependencies": [
+      "org.springframework.data.jpa.repository.JpaRepository",
+      "org.springframework.data.domain.Sort",
+      "org.springframework.data.jpa.repository.Query",
+      "java.util.List",
+      "java.util.Optional"
+    ],
+    "functions": [
+      {
+        "name": "findAllBy",
+        "description": "This function returns a list of all OrderEntity objects, sorted according to the provided Sort object. It uses a custom query to fetch the data, which includes joining the OrderEntity with its associated order items.",
+        "internal_dependencies": [
+          "OrderEntity"
+        ]
+      },
+      {
+        "name": "findByOrderNumber",
+        "description": "This function returns an Optional containing the OrderEntity object that matches the provided order number. If no such OrderEntity exists, the Optional is empty. It uses a custom query to fetch the data, which includes joining the OrderEntity with its associated order items.",
+        "internal_dependencies": [
+          "OrderEntity"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrderMapper.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\mappers\\OrderMapper.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.orders.OrderView",
+      "com.sivalabs.bookstore.orders.OrderDto",
+      "com.sivalabs.bookstore.orders.domain.models.OrderStatus",
+      "com.sivalabs.bookstore.orders.CreateOrderRequest",
+      "com.sivalabs.bookstore.orders.domain.OrderEntity"
+    ],
+    "external_dependencies": [
+      "java.util.UUID",
+      "java.util.ArrayList",
+      "java.util.List"
+    ],
+    "functions": [
+      {
+        "name": "convertToEntity",
+        "description": "Converts a CreateOrderRequest object into an OrderEntity object. It sets a random UUID as the order number, sets the status as NEW, and copies the customer, delivery address, and order item from the request.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.CreateOrderRequest",
+          "com.sivalabs.bookstore.orders.domain.OrderEntity",
+          "com.sivalabs.bookstore.orders.domain.models.OrderStatus"
+        ]
+      },
+      {
+        "name": "convertToDto",
+        "description": "Converts an OrderEntity object into an OrderDto object. It copies all fields from the entity to the DTO.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.OrderDto",
+          "com.sivalabs.bookstore.orders.domain.OrderEntity"
+        ]
+      },
+      {
+        "name": "convertToOrderViews",
+        "description": "Converts a list of OrderEntity objects into a list of OrderView objects. It creates a new OrderView for each entity, copying the order number, status, and customer, and adds it to the list of views.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.OrderView",
+          "com.sivalabs.bookstore.orders.domain.OrderEntity"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "ProductService.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\catalog\\domain\\ProductService.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.catalog.domain.ProductRepository",
+      "com.sivalabs.bookstore.common.models.PagedResult",
+      "com.sivalabs.bookstore.catalog.domain.ProductEntity"
+    ],
+    "external_dependencies": [
+      "org.springframework.stereotype.Service",
+      "org.springframework.data.domain.Pageable",
+      "org.springframework.transaction.annotation.Transactional",
+      "org.springframework.data.domain.Sort",
+      "org.springframework.data.domain.PageRequest",
+      "org.springframework.data.domain.Page",
+      "java.util.Optional"
+    ],
+    "functions": [
+      {
+        "name": "ProductService",
+        "description": "Constructor for ProductService class. It initializes the ProductRepository instance.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.catalog.domain.ProductRepository"
+        ]
+      },
+      {
+        "name": "getProducts",
+        "description": "This function retrieves a page of products sorted by name in ascending order. The page number is passed as a parameter. It returns a PagedResult object containing the products page.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.common.models.PagedResult",
+          "com.sivalabs.bookstore.catalog.domain.ProductRepository",
+          "com.sivalabs.bookstore.catalog.domain.ProductEntity"
+        ]
+      },
+      {
+        "name": "getByCode",
+        "description": "This function retrieves a product by its code. It returns an Optional object containing the product if it exists.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.catalog.domain.ProductRepository",
+          "com.sivalabs.bookstore.catalog.domain.ProductEntity"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrderEventInventoryHandler.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\inventory\\OrderEventInventoryHandler.java",
+    "internal_dependencies": [
+      "InventoryService",
+      "OrderCreatedEvent"
+    ],
+    "external_dependencies": [
+      "org.springframework.modulith.events",
+      "org.slf4j",
+      "com.sivalabs.bookstore.orders.domain.models",
+      "org.springframework.stereotype"
+    ],
+    "functions": [
+      {
+        "name": "OrderEventInventoryHandler",
+        "description": "Constructor for the OrderEventInventoryHandler class. It initializes the InventoryService instance.",
+        "internal_dependencies": [
+          "InventoryService"
+        ]
+      },
+      {
+        "name": "handle",
+        "description": "This method handles the event of order creation. It logs the event and decreases the stock level in the inventory service.",
+        "internal_dependencies": [
+          "OrderCreatedEvent",
+          "InventoryService"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrdersApi.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\OrdersApi.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.orders.mappers.OrderMapper",
+      "com.sivalabs.bookstore.orders.domain.OrderService",
+      "com.sivalabs.bookstore.orders.domain.OrderEntity"
+    ],
+    "external_dependencies": [
+      "org.springframework.stereotype.Component",
+      "java.util.Optional",
+      "java.util.List"
+    ],
+    "functions": [
+      {
+        "name": "OrdersApi",
+        "description": "Constructor for OrdersApi class. It initializes the OrderService object.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.OrderService"
+        ]
+      },
+      {
+        "name": "createOrder",
+        "description": "Creates a new order. It uses the OrderService to create the order and the OrderMapper to convert the request to an OrderEntity.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.OrderEntity",
+          "com.sivalabs.bookstore.orders.domain.OrderService",
+          "com.sivalabs.bookstore.orders.mappers.OrderMapper"
+        ]
+      },
+      {
+        "name": "findOrder",
+        "description": "Finds an order by its order number. It uses the OrderService to find the order and the OrderMapper to convert the OrderEntity to an OrderDto.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.OrderEntity",
+          "com.sivalabs.bookstore.orders.domain.OrderService",
+          "com.sivalabs.bookstore.orders.mappers.OrderMapper"
+        ]
+      },
+      {
+        "name": "findOrders",
+        "description": "Finds all orders. It uses the OrderService to find the orders and the OrderMapper to convert the list of OrderEntity to a list of OrderView.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.domain.OrderEntity",
+          "com.sivalabs.bookstore.orders.domain.OrderService",
+          "com.sivalabs.bookstore.orders.mappers.OrderMapper"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "ProductApi.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\catalog\\ProductApi.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.catalog.mappers.ProductMapper",
+      "com.sivalabs.bookstore.catalog.domain.ProductService"
+    ],
+    "external_dependencies": [
+      "org.springframework.stereotype.Component",
+      "java.util.Optional"
+    ],
+    "functions": [
+      {
+        "name": "ProductApi",
+        "description": "Constructor for the ProductApi class. It initializes the productService and productMapper objects.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.catalog.domain.ProductService",
+          "com.sivalabs.bookstore.catalog.mappers.ProductMapper"
+        ]
+      },
+      {
+        "name": "getByCode",
+        "description": "This function retrieves a product by its code. It uses the productService to get the product and the productMapper to convert it to a DTO.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.catalog.domain.ProductService",
+          "com.sivalabs.bookstore.catalog.mappers.ProductMapper"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "ProductRestController.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\catalog\\web\\ProductRestController.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.catalog.mappers.ProductMapper",
+      "com.sivalabs.bookstore.common.models.PagedResult",
+      "com.sivalabs.bookstore.catalog.domain.ProductNotFoundException",
+      "com.sivalabs.bookstore.catalog.domain.ProductService",
+      "com.sivalabs.bookstore.catalog.ProductDto"
+    ],
+    "external_dependencies": [
+      "org.slf4j.Logger",
+      "org.springframework.web.bind.annotation.RequestMapping",
+      "org.slf4j.LoggerFactory",
+      "org.springframework.web.bind.annotation.PathVariable",
+      "org.springframework.web.bind.annotation.RestController",
+      "org.springframework.web.bind.annotation.GetMapping",
+      "org.springframework.web.bind.annotation.RequestParam"
+    ],
+    "functions": [
+      {
+        "name": "ProductRestController",
+        "description": "Constructor for the ProductRestController class. It initializes the ProductService and ProductMapper objects.",
+        "internal_dependencies": [
+          "ProductService",
+          "ProductMapper"
+        ]
+      },
+      {
+        "name": "getProducts",
+        "description": "Fetches a page of products. It uses the ProductService to get the products and the ProductMapper to map the products to DTOs.",
+        "internal_dependencies": [
+          "ProductService",
+          "ProductMapper"
+        ]
+      },
+      {
+        "name": "getProductByCode",
+        "description": "Fetches a product by its code. It uses the ProductService to get the product and the ProductMapper to map the product to a DTO. If the product is not found, it throws a ProductNotFoundException.",
+        "internal_dependencies": [
+          "ProductService",
+          "ProductMapper",
+          "ProductNotFoundException"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "ProductWebController.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\catalog\\web\\ProductWebController.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.catalog.mappers.ProductMapper",
+      "com.sivalabs.bookstore.common.models.PagedResult",
+      "com.sivalabs.bookstore.catalog.domain.ProductService"
+    ],
+    "external_dependencies": [
+      "org.slf4j.Logger",
+      "org.springframework.stereotype.Controller",
+      "org.slf4j.LoggerFactory",
+      "io.github.wimdeblauwe.htmx.spring.boot.mvc.HtmxRequest",
+      "org.springframework.web.bind.annotation.RequestParam",
+      "org.springframework.web.bind.annotation.GetMapping",
+      "org.springframework.ui.Model"
+    ],
+    "functions": [
+      {
+        "name": "ProductWebController",
+        "description": "Constructor for the ProductWebController class. It initializes the ProductService and ProductMapper objects.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.catalog.domain.ProductService",
+          "com.sivalabs.bookstore.catalog.mappers.ProductMapper"
+        ]
+      },
+      {
+        "name": "index",
+        "description": "This function handles GET requests at the root URL and redirects to '/products'."
+      },
+      {
+        "name": "showProducts",
+        "description": "This function handles GET requests at the '/products' URL. It fetches products for a given page, maps them to DTOs, adds them to the model, and returns the appropriate view name based on whether the request is an htmx request or not.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.catalog.domain.ProductService",
+          "com.sivalabs.bookstore.catalog.mappers.ProductMapper",
+          "com.sivalabs.bookstore.common.models.PagedResult"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "CartController.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\web\\CartController.java",
+    "internal_dependencies": [
+      "Cart",
+      "CartUtil",
+      "Cart.LineItem",
+      "com.sivalabs.bookstore.orders.domain.models.Customer",
+      "com.sivalabs.bookstore.catalog.ProductApi",
+      "OrderForm",
+      "com.sivalabs.bookstore.catalog.ProductDto"
+    ],
+    "external_dependencies": [
+      "org.slf4j.Logger",
+      "jakarta.servlet.http.HttpSession",
+      "org.springframework.stereotype.Controller",
+      "org.slf4j.LoggerFactory",
+      "org.springframework.web.servlet.view.FragmentsRendering",
+      "org.springframework.web.bind.annotation.RequestParam",
+      "java.util.Map",
+      "org.springframework.web.servlet.View",
+      "org.springframework.web.bind.annotation.GetMapping",
+      "org.springframework.web.bind.annotation.PostMapping",
+      "io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest",
+      "io.github.wimdeblauwe.htmx.spring.boot.mvc.HtmxRefreshView",
+      "org.springframework.ui.Model"
+    ],
+    "functions": [
+      {
+        "name": "CartController",
+        "description": "Constructor for CartController class. It initializes the ProductApi instance.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.catalog.ProductApi"
+        ]
+      },
+      {
+        "name": "addProductToCart",
+        "description": "This function adds a product to the cart. It takes a product code and a session as parameters.",
+        "internal_dependencies": [
+          "CartUtil",
+          "Cart",
+          "com.sivalabs.bookstore.catalog.ProductDto",
+          "Cart.LineItem"
+        ]
+      },
+      {
+        "name": "showCart",
+        "description": "This function shows the cart. It takes a model and a session as parameters.",
+        "internal_dependencies": [
+          "CartUtil",
+          "Cart",
+          "OrderForm",
+          "com.sivalabs.bookstore.orders.domain.models.Customer"
+        ]
+      },
+      {
+        "name": "updateCart",
+        "description": "This function updates the cart. It takes a product code, quantity, and a session as parameters.",
+        "internal_dependencies": [
+          "CartUtil",
+          "Cart",
+          "io.github.wimdeblauwe.htmx.spring.boot.mvc.HtmxRefreshView",
+          "org.springframework.web.servlet.view.FragmentsRendering"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrderWebSupport.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\web\\OrderWebSupport.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.orders.CreateOrderRequest",
+      "com.sivalabs.bookstore.catalog.ProductApi",
+      "com.sivalabs.bookstore.orders.InvalidOrderException"
+    ],
+    "external_dependencies": [],
+    "functions": [
+      {
+        "name": "OrderWebSupport",
+        "description": "Constructor for OrderWebSupport class. It initializes the ProductApi object.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.catalog.ProductApi"
+        ]
+      },
+      {
+        "name": "validate",
+        "description": "This function validates a CreateOrderRequest object. It checks if the product code exists and if the price matches the product price. If not, it throws an InvalidOrderException.",
+        "internal_dependencies": [
+          "com.sivalabs.bookstore.orders.CreateOrderRequest",
+          "com.sivalabs.bookstore.orders.InvalidOrderException",
+          "com.sivalabs.bookstore.catalog.ProductApi"
+        ]
+      }
+    ]
+  },
+  {
+    "file_name": "OrderRestController.java",
+    "file_path": "monolith_code\\src\\main\\java\\com\\sivalabs\\bookstore\\orders\\web\\OrderRestController.java",
+    "internal_dependencies": [
+      "com.sivalabs.bookstore.orders.OrderNotFoundException",
+      "com.sivalabs.bookstore.orders.OrderView",
+      "com.sivalabs.bookstore.orders.OrderDto",
+      "com.sivalabs.bookstore.orders.domain.OrderService",
+      "com.sivalabs.bookstore.catalog.ProductApi",
+      "com.sivalabs.bookstore.orders.CreateOrderResponse",
+      "com.sivalabs.bookstore.orders.CreateOrderRequest",
+      "com.sivalabs.bookstore.orders.mappers.OrderMapper",
+      "com.sivalabs.bookstore.orders.domain.OrderEntity",
+      "OrderWebSupport"
+    ],
+    "external_dependencies": [
+      "org.slf4j.Logger",
+      "org.springframework.web.bind.annotation.RequestBody",
+      "jakarta.validation.Valid",
+      "org.springframework.web.bind.annotation.RequestMapping",
+      "org.slf4j.LoggerFactory",
+      "org.springframework.web.bind.annotation.ResponseStatus",
+      "org.springframework.web.bind.annotation.PathVariable",
+      "org.springframework.web.bind.annotation.RestController",
+      "org.springframework.web.bind.annotation.GetMapping",
+      "org.springframework.web.bind.annotation.PostMapping",
+      "java.util.List",
+      "org.springframework.http.HttpStatus"
+    ],
+    "functions": [
+      {
+        "name": "OrderRestController",
+        "description": "Constructor for OrderRestController. It initializes the OrderService and ProductApi.",
+        "internal_dependencies": [
+          "OrderService",
+          "ProductApi"
+        ]
+      },
+      {
+        "name": "createOrder",
+        "description": "This function validates the request, converts it to an OrderEntity, creates an order using OrderService, and returns a CreateOrderResponse.",
+        "internal_dependencies": [
+          "CreateOrderRequest",
+          "OrderEntity",
+          "OrderService",
+          "CreateOrderResponse"
+        ]
+      },
+      {
+        "name": "getOrder",
+        "description": "This function fetches an order by its order number using OrderService, converts it to an OrderDto, and returns it. If the order is not found, it throws an OrderNotFoundException.",
+        "internal_dependencies": [
+          "OrderDto",
+          "OrderService",
+          "OrderNotFoundException"
+        ]
+      },
+      {
+        "name": "getOrders",
+        "description": "This function fetches all orders using OrderService, converts them to OrderViews, and returns them.",
+        "internal_dependencies": [
+          "OrderView",
+          "OrderService"
+        ]
+      }
+    ]
+  }
+]

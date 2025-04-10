@@ -1,0 +1,75 @@
+[
+  {
+    "microservice_name": "ProductCatalogService",
+    "description": "Handles all product-related logic, including product details, product listing, exception handling for product not found, and inventory details.",
+    "related_files": [
+      "ProductDto.java",
+      "ProductNotFoundException.java",
+      "ProductRepository.java",
+      "ProductMapper.java",
+      "ProductApi.java",
+      "CatalogExceptionHandler.java",
+      "ProductService.java",
+      "ProductEntity.java",
+      "ProductWebController.java",
+      "ProductRestController.java",
+      "InventoryRepository.java",
+      "InventoryEntity.java",
+      "InventoryService.java",
+      "OrderEventInventoryHandler.java"
+    ]
+  },
+  {
+    "microservice_name": "OrderCartService",
+    "description": "Handles all order-related logic and workflows, manages the shopping cart functionality, and handles exceptions related to orders.",
+    "related_files": [
+      "OrderEventNotificationHandler.java",
+      "CreateOrderResponse.java",
+      "InvalidOrderException.java",
+      "CreateOrderRequest.java",
+      "OrderNotFoundException.java",
+      "OrderDto.java",
+      "Customer.java",
+      "OrderView.java",
+      "OrderCreatedEvent.java",
+      "OrderItem.java",
+      "OrderStatus.java",
+      "OrderRepository.java",
+      "OrderForm.java",
+      "OrdersApi.java",
+      "OrderService.java",
+      "OrderMapper.java",
+      "OrderWebSupport.java",
+      "OrderRestController.java",
+      "OrderEntity.java",
+      "OrderWebController.java",
+      "OrdersExceptionHandler.java",
+      "CartUtil.java",
+      "Cart.java",
+      "CartController.java"
+    ]
+  },
+  {
+    "microservice_name": "ApplicationCommonService",
+    "description": "Handles the main application startup logic and common logic that is used across multiple services, such as paged results.",
+    "related_files": [
+      "BookStoreApplication.java",
+      "PagedResult.java"
+    ]
+  },
+  {
+    "microservice_name": "ConfigurationService",
+    "description": "Handles all configuration-related logic and workflows, and the configuration of test containers.",
+    "related_files": [
+      "RabbitMQConfig.java",
+      "TestcontainersConfiguration.java"
+    ]
+  },
+  {
+    "microservice_name": "TestService",
+    "description": "Handles testing of the application.",
+    "related_files": [
+      "TestBookStoreApplication.java"
+    ]
+  }
+]
