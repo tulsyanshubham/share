@@ -83,18 +83,17 @@
         msg.textContent = text;
         messagesDiv.appendChild(msg);
     }
+        socket = new WebSocket("ws://localhost:8000/ws");
+        socket.onmessage = (event) => {
+            appendMessage("📨 " + event.data);
+        };
 
     document.getElementById("repoForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const repoUrl = document.getElementById("repoUrl").value;
         messagesDiv.innerHTML = "📡 Connecting to WebSocket...\n";
 
-        socket = new WebSocket("ws://localhost:8000/ws");
-
-        socket.onopen = () => {
-            appendMessage("🔌 WebSocket connected. Sending repo URL...");
-            socket.send(repoUrl); // Send the repo URL through the WebSocket
-        };
+        socket.send(repoUrl);
 
         socket.onmessage = (event) => {
             appendMessage("📨 " + event.data);

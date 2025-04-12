@@ -26,9 +26,9 @@ class ProjectState(TypedDict):
     socket: any
 
 @traceable
-def check_database(state : ProjectState) -> ProjectState:
+async def check_database(state : ProjectState) -> ProjectState:
     print("Checking database")
-    present, data = check_db(state["repo_link"])
+    present, data = await check_db(state["repo_link"])
     if present:
         print("[INFO] Data already exists for this repo. Skipping cloning and analysis.")
         state["present"] = True
@@ -38,59 +38,59 @@ def check_database(state : ProjectState) -> ProjectState:
     return state
 
 @traceable
-def clone_repository(state : ProjectState) -> ProjectState:
+async def clone_repository(state : ProjectState) -> ProjectState:
     print("Cloning repository")
     destination = state["destination"]
     repo_link = state["repo_link"]
-    clone_repo(repo_link, destination)
+    await clone_repo(repo_link, destination)
     return state
 
 @traceable
-def analyze_repository(state : ProjectState) -> ProjectState:
+async def analyze_repository(state : ProjectState) -> ProjectState:
     print("Analyzing repository")
-    file_analysis = analyze_repo_code(state["destination"])
+    file_analysis = await analyze_repo_code(state["destination"])
     state["file_analysis"] = file_analysis
     return state
 
 @traceable
-def sort_files_based_on_dependencies(state : ProjectState) -> ProjectState:
+async def sort_files_based_on_dependencies(state : ProjectState) -> ProjectState:
     print("Topological sorting")
-    sorted_files = topological_sort(state["file_analysis"])
+    sorted_files = await topological_sort(state["file_analysis"])
     state["sorted_files"] = sorted_files
     return state
 
 @traceable
-def generate_microservice_list_graph(state : ProjectState) -> ProjectState:
+async def generate_microservice_list_graph(state : ProjectState) -> ProjectState:
     print("Generating microservice list")
-    micro_services_list = generate_microservice_list(state["sorted_files"])
+    micro_services_list = await generate_microservice_list(state["sorted_files"])
     state["micro_services_list"] = micro_services_list
     return state
 
 @traceable
-def generate_microservice_code_plan(state : ProjectState) -> ProjectState:
+async def generate_microservice_code_plan(state : ProjectState) -> ProjectState:
     print("Generating microservice code plan")
-    microservice_output = generate_microservice_code_plan_threaded(state["sorted_files"], state["micro_services_list"])
+    microservice_output = await generate_microservice_code_plan_threaded(state["sorted_files"], state["micro_services_list"])
     state["microservice_output"] = microservice_output
     return state
 
 @traceable
-def generate_combined_markdown(state : ProjectState) -> ProjectState:
+async def generate_combined_markdown(state : ProjectState) -> ProjectState:
     print("Generating combined markdown")
-    result = generate_combined_markdown_from_json(state["microservice_output"])
+    result = await generate_combined_markdown_from_json(state["microservice_output"])
     state["result"] = result
     return state
 
 @traceable
-def insert_data_into_database(state : ProjectState) -> ProjectState:
+async def insert_data_into_database(state : ProjectState) -> ProjectState:
     print("Inserting data into database")
-    if insert_data(state["repo_link"], state["result"]):
+    if await insert_data(state["repo_link"], state["result"]):
         print("[SUCCESS] Data inserted successfully.")
     else:
         print("[FAILED] Data insertion failed.")
     return state
 
 @traceable
-def exists_in_database(state : ProjectState) -> ProjectState:
+async def exists_in_database(state : ProjectState) -> ProjectState:
     print("Check for errors in the project files")
     if state["present"]:
         return "Present"
@@ -127,7 +127,7 @@ graph.add_edge("Insert into Database",END)
 
 app = graph.compile()
 
-def invoke_graph(repo_url: str, destination: str):
+async def invoke_graph(repo_url: str, destination: str):
     state = ProjectState(
         repo_link=repo_url,
         destination=destination,
@@ -138,7 +138,7 @@ def invoke_graph(repo_url: str, destination: str):
         microservice_output={},
         result=""
     )
-    final_state = app.invoke(state)
+    final_state = await app.ainvoke(state)
     return final_state["result"]
 
 # if __name__ == "__main__":
