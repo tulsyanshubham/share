@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Monolith to Microservices Migration</title>
+        <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background-color: #f4f6f8;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #messages {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 1rem;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      white-space: pre-wrap;
+    }
+
+    .message {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+    </head>
+    <body>
+
+        <h1>Microservice Migration Monitor</h1>
+
+        <form id="repoForm">
+            <input type="text" id="repoUrl" placeholder="Enter GitHub repo URL"
+                required />
+            <button type="submit">Start</button>
+        </form>
+
+        <div id="messages">💬 Waiting for messages from server...</div>
+
+        <script>
+    let socket;
+    const messagesDiv = document.getElementById("messages");
+
+    function appendMessage(text) {
+        const msg = document.createElement("div");
+        msg.className = "message";
+        msg.textContent = text;
+        messagesDiv.appendChild(msg);
+    }
+
+    document.getElementById("repoForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const repoUrl = document.getElementById("repoUrl").value;
+        messagesDiv.innerHTML = "📡 Connecting to WebSocket...\n";
+
+        socket = new WebSocket("ws://localhost:8000/ws");
+
+        socket.onopen = () => {
+            appendMessage("🔌 WebSocket connected. Sending repo URL...");
+            socket.send(repoUrl); // Send the repo URL through the WebSocket
+        };
+
+        socket.onmessage = (event) => {
+            appendMessage("📨 " + event.data);
+        };
+
+        socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+            appendMessage("❌ WebSocket error occurred.");
+        };
+
+        socket.onclose = () => {
+            appendMessage("🔌 WebSocket connection closed.");
+        };
+    });
+    </script>
+
+    </body>
+</html>

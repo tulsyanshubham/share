@@ -53,7 +53,7 @@ def worker(queue, results):
         finally: 
             queue.task_done()
 
-def generate_combined_markdown_from_json(microservice_outputs): 
+async def generate_combined_markdown_from_json(microservice_outputs): 
     print(f"[INFO] Processing {len(microservice_outputs)} microservices.")
 
     q = Queue()

@@ -6,20 +6,13 @@ from nodes.service_split import generate_microservice_code_plan_threaded
 from nodes.generate_report import generate_combined_markdown_from_json
 from nodes.insert_data import insert_data
 from nodes.check_db import check_db
-from langsmith import traceable 
+from langsmith import traceable
+
 from langchain_core.runnables.graph import MermaidDrawMethod
 
 from langgraph.graph import StateGraph
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict
-from fastapi import WebSocket
-
-async def safe_send(socket: WebSocket, message: str):
-    try:
-        await socket.send_text(message)
-    except Exception as e:
-        print(f"[WebSocket Error] Failed to send message: {e}")
-
 
 class ProjectState(TypedDict):
     repo_link: str
@@ -30,14 +23,12 @@ class ProjectState(TypedDict):
     micro_services_list: dict
     microservice_output: dict
     result: str
-    socket: WebSocket
+    socket: any
 
 @traceable
-async def check_database(state : ProjectState) -> ProjectState:
+def check_database(state : ProjectState) -> ProjectState:
     print("Checking database")
-    if "socket" in state:
-        await safe_send(state["socket"], "Checking database")
-    present, data = await check_db(state["repo_link"])
+    present, data = check_db(state["repo_link"])
     if present:
         print("[INFO] Data already exists for this repo. Skipping cloning and analysis.")
         state["present"] = True
@@ -47,80 +38,60 @@ async def check_database(state : ProjectState) -> ProjectState:
     return state
 
 @traceable
-async def clone_repository(state : ProjectState) -> ProjectState:
+def clone_repository(state : ProjectState) -> ProjectState:
     print("Cloning repository")
-    if "socket" in state:
-        await safe_send(state["socket"], "Cloning repository")
     destination = state["destination"]
     repo_link = state["repo_link"]
-    cloned = await clone_repo(repo_link, destination)
-    if not cloned:
-        await safe_send(state["socket"], "❌ Failed to clone repository.")
-    else:
-        await safe_send(state["socket"], "✅ Repository cloned successfully.")
+    clone_repo(repo_link, destination)
     return state
 
 @traceable
-async def analyze_repository(state : ProjectState) -> ProjectState:
+def analyze_repository(state : ProjectState) -> ProjectState:
     print("Analyzing repository")
-    if "socket" in state:
-        await safe_send(state["socket"], "Analyzing repository")
-    file_analysis = await analyze_repo_code(state["destination"])
+    file_analysis = analyze_repo_code(state["destination"])
     state["file_analysis"] = file_analysis
     return state
 
 @traceable
-async def sort_files_based_on_dependencies(state : ProjectState) -> ProjectState:
+def sort_files_based_on_dependencies(state : ProjectState) -> ProjectState:
     print("Topological sorting")
-    if "socket" in state:
-        await safe_send(state["socket"], "Topological sorting")
-    sorted_files = await topological_sort(state["file_analysis"])
+    sorted_files = topological_sort(state["file_analysis"])
     state["sorted_files"] = sorted_files
     return state
 
 @traceable
-async def generate_microservice_list_graph(state : ProjectState) -> ProjectState:
+def generate_microservice_list_graph(state : ProjectState) -> ProjectState:
     print("Generating microservice list")
-    if "socket" in state:
-        await safe_send(state["socket"], "Generating microservice list")
-    micro_services_list = await generate_microservice_list(state["sorted_files"])
+    micro_services_list = generate_microservice_list(state["sorted_files"])
     state["micro_services_list"] = micro_services_list
     return state
 
 @traceable
-async def generate_microservice_code_plan(state : ProjectState) -> ProjectState:
+def generate_microservice_code_plan(state : ProjectState) -> ProjectState:
     print("Generating microservice code plan")
-    if "socket" in state:
-        await safe_send(state["socket"], "Generating microservice code plan")
-    microservice_output = await generate_microservice_code_plan_threaded(state["sorted_files"], state["micro_services_list"])
+    microservice_output = generate_microservice_code_plan_threaded(state["sorted_files"], state["micro_services_list"])
     state["microservice_output"] = microservice_output
     return state
 
 @traceable
-async def generate_combined_markdown(state : ProjectState) -> ProjectState:
+def generate_combined_markdown(state : ProjectState) -> ProjectState:
     print("Generating combined markdown")
-    if "socket" in state:
-        await safe_send(state["socket"], "Generating combined markdown")
-    result = await generate_combined_markdown_from_json(state["microservice_output"])
+    result = generate_combined_markdown_from_json(state["microservice_output"])
     state["result"] = result
     return state
 
 @traceable
-async def insert_data_into_database(state : ProjectState) -> ProjectState:
+def insert_data_into_database(state : ProjectState) -> ProjectState:
     print("Inserting data into database")
-    if "socket" in state:
-        await safe_send(state["socket"], "Inserting data into database")
-    if await insert_data(state["repo_link"], state["result"]):
+    if insert_data(state["repo_link"], state["result"]):
         print("[SUCCESS] Data inserted successfully.")
     else:
         print("[FAILED] Data insertion failed.")
     return state
 
 @traceable
-async def exists_in_database(state : ProjectState) -> ProjectState:
-    print("Check if data exists in database")
-    if "socket" in state:
-        await safe_send(state["socket"], "Checking if data exists in database")
+def exists_in_database(state : ProjectState) -> ProjectState:
+    print("Check for errors in the project files")
     if state["present"]:
         return "Present"
     else:
@@ -156,7 +127,7 @@ graph.add_edge("Insert into Database",END)
 
 app = graph.compile()
 
-async def invoke_graph(repo_url: str, destination: str,socket : WebSocket):
+def invoke_graph(repo_url: str, destination: str):
     state = ProjectState(
         repo_link=repo_url,
         destination=destination,
@@ -165,13 +136,10 @@ async def invoke_graph(repo_url: str, destination: str,socket : WebSocket):
         sorted_files={},
         micro_services_list={},
         microservice_output={},
-        result="",
-        socket=socket
+        result=""
     )
-    final_state = await app.ainvoke(state)
-    if "socket" in state:
-        await socket.send_text("✅ Migration completed successfully.")
-        await socket.send_text(final_state["result"])
+    final_state = app.invoke(state)
+    return final_state["result"]
 
 # if __name__ == "__main__":
     

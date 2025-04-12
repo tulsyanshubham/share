@@ -23,7 +23,7 @@ def upsert_migration(data: dict):
     except ValidationError as e:
         print("[❌] Validation failed:", e)
 
-def insert_data(repo_link: str, result: str):
+async def insert_data(repo_link: str, result: str):
     REPO_LINK = repo_link.split("github.com/")[-1].replace(".git", "").strip()
     data = {
         "repo_link": REPO_LINK,

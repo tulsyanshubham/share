@@ -81,7 +81,7 @@ def worker(queue: Queue, results: List[dict], lock: threading.Lock):
         finally:
             queue.task_done()
 
-def analyze_repo_code(repo_path: str) -> List[dict]:
+async def analyze_repo_code(repo_path: str) -> List[dict]:
     file_queue = Queue()
     results = []
     lock = threading.Lock()

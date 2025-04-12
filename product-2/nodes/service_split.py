@@ -71,7 +71,7 @@ def worker(queue, microservices, results, lock):
             print(f"[ERROR] Failed to process {item['file_name']}: {e}")
         queue.task_done()
 
-def generate_microservice_code_plan_threaded(sorted_files, microservices, num_threads=8):
+async def generate_microservice_code_plan_threaded(sorted_files, microservices, num_threads=8):
     queue = Queue()
     results = []
     lock = threading.Lock()

@@ -42,7 +42,7 @@ def detect_cycles(graph, indegree):
     cycle_nodes = [node for node in indegree if node not in visited]
     return cycle_nodes
 
-def topological_sort(file_data, fail_on_cycle=False):
+async def topological_sort(file_data, fail_on_cycle=False):
     print("[INFO] Building dependency graph...")
     graph, indegree = build_dependency_graph(file_data)
     original_indegree = indegree.copy()

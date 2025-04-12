@@ -114,7 +114,7 @@ def merge_microservices_with_llm(microservices, target_min=5, target_max=9):
         print(f"[ERROR] Failed to parse LLM merge output: {e}")
         return microservices  # Fallback if LLM output breaks
 
-def generate_microservice_list(analysis_data):
+async def generate_microservice_list(analysis_data):
     all_chunks = chunk_json_objects(analysis_data)
     all_microservices = []
 
