@@ -1,5 +1,3 @@
-import json
-import re
 from collections import defaultdict, deque
 
 def simplify_dependency_name(dep):
@@ -28,12 +26,28 @@ def build_dependency_graph(file_data):
 
     return graph, indegree
 
-def topological_sort(file_data):
-    """Sorts files so each file appears after its dependencies."""
+def detect_cycles(graph, indegree):
+    """Identify nodes involved in cycles using Kahn’s algorithm."""
+    queue = deque([node for node in indegree if indegree[node] == 0])
+    visited = set()
+
+    while queue:
+        node = queue.popleft()
+        visited.add(node)
+        for neighbor in graph[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                queue.append(neighbor)
+
+    cycle_nodes = [node for node in indegree if node not in visited]
+    return cycle_nodes
+
+def topological_sort(file_data, fail_on_cycle=False):
+    print("[INFO] Building dependency graph...")
     graph, indegree = build_dependency_graph(file_data)
+    original_indegree = indegree.copy()
     name_to_file = {f["file_name"]: f for f in file_data}
 
-    # Start with files that have 0 dependencies, sorted for stability
     zero_dep_queue = deque(sorted([name for name in indegree if indegree[name] == 0]))
     sorted_file_names = []
 
@@ -41,28 +55,21 @@ def topological_sort(file_data):
         current = zero_dep_queue.popleft()
         sorted_file_names.append(current)
 
-        for neighbor in sorted(graph[current]):  # Sort neighbors for consistency
+        for neighbor in sorted(graph[current]):
             indegree[neighbor] -= 1
             if indegree[neighbor] == 0:
                 zero_dep_queue.append(neighbor)
 
     if len(sorted_file_names) != len(indegree):
-        raise Exception("Cycle detected in internal dependencies!")
+        cycle_nodes = detect_cycles(graph, original_indegree)
+        print(f"[ERROR] Cycle detected! Involved files: {cycle_nodes}")
+        if fail_on_cycle:
+            raise Exception(f"Cycle detected in internal dependencies: {cycle_nodes}")
+        else:
+            print("[WARN] Continuing with partial sort. Cyclic files will be appended unsorted.")
+            for cycle_file in cycle_nodes:
+                if cycle_file not in sorted_file_names:
+                    sorted_file_names.append(cycle_file)
 
+    print(f"[INFO] Final sorted file count: {len(sorted_file_names)}")
     return [name_to_file[name] for name in sorted_file_names]
-
-def sort_file_analysis(input_path, output_path):
-    """Reads the input file, sorts by internal dependency, and saves the result."""
-    with open(input_path, 'r') as f:
-        file_data = json.load(f)
-
-    sorted_files = topological_sort(file_data)
-
-    with open(output_path, 'w') as out:
-        json.dump(sorted_files, out, indent=2)
-
-    print(f"[SUCCESS] Files sorted and saved to {output_path}")
-
-# Example usage
-if __name__ == "__main__":
-    sort_file_analysis("file_analysis.json", "file_analysis_sorted.json")

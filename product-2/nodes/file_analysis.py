@@ -5,11 +5,15 @@ import openai
 from pathlib import Path
 from typing import List
 from queue import Queue
+from dotenv import load_dotenv
+
+load_dotenv()
 
 openai.api_key = os.environ.get("OPEN_AI_API_KEY")
 
 MAX_CHARS = 8000
 max_threads = 8
+# TODO-> add more skip files
 skip_files = ('package-info.java', 'module-info.java', 'pom.xml', 'Dockerfile', '.gitignore', 'README.md', '.git', "Test.java", "Tests.java")
 
 def read_code_file(file_path: Path) -> List[str]:
@@ -77,7 +81,7 @@ def worker(queue: Queue, results: List[dict], lock: threading.Lock):
         finally:
             queue.task_done()
 
-def analyze_repo_code(repo_path: str, output_json_path: str):
+def analyze_repo_code(repo_path: str) -> List[dict]:
     file_queue = Queue()
     results = []
     lock = threading.Lock()
@@ -99,11 +103,10 @@ def analyze_repo_code(repo_path: str, output_json_path: str):
     for t in threads:
         t.join()
 
-    # Save output
-    with open(output_json_path, 'w') as out_f:
-        json.dump(results, out_f, indent=2)
-    print(f"[SUCCESS] Analysis saved to {output_json_path}")
+    print(f"[SUCCESS] Analysis completed. Returning {len(results)} results.")
+    return results
 
-# Example usage
-if __name__ == "__main__":
-    analyze_repo_code("./monolith_code", "file_analysis.json")
+# if __name__ == "__main__":
+#     results = analyze_repo_code("./monolith_code")
+#     with open("file_analysis.json", "w") as f:
+#         json.dump(results, f, indent=2)

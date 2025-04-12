@@ -2,6 +2,9 @@ import json
 import os
 import openai
 import re
+from dotenv import load_dotenv
+
+load_dotenv()
 
 openai.api_key = os.environ.get("OPEN_AI_API_KEY")
 
@@ -38,6 +41,8 @@ def get_microservices_from_chunk(chunk_data):
     - DO NOT exceed 9 microservices under any circumstance.
     - Each microservice should serve a broad business function.
     - Grouping should favor simplicity, cohesion, and real-world service boundaries.
+    - **Also provide the steps needed to transform from monolothic architecture to microservice architecture for that specific microservice.**
+    - Each microservice should have a clear name and description.
 
     📦 Output format:
     [
@@ -67,7 +72,7 @@ def get_microservices_from_chunk(chunk_data):
 
     return result_text
 
-def merge_microservices_with_llm(microservices, target_min=4, target_max=9):
+def merge_microservices_with_llm(microservices, target_min=5, target_max=9):
     if len(microservices) <= target_max:
         return microservices
 
@@ -109,10 +114,7 @@ def merge_microservices_with_llm(microservices, target_min=4, target_max=9):
         print(f"[ERROR] Failed to parse LLM merge output: {e}")
         return microservices  # Fallback if LLM output breaks
 
-def generate_microservice_list(input_json_path: str, output_json_path: str):
-    with open(input_json_path, 'r') as f:
-        analysis_data = json.load(f)
-
+def generate_microservice_list(analysis_data):
     all_chunks = chunk_json_objects(analysis_data)
     all_microservices = []
 
@@ -133,12 +135,11 @@ def generate_microservice_list(input_json_path: str, output_json_path: str):
         final_microservices = merge_microservices_with_llm(all_microservices, target_min=4, target_max=9)
     else:
         final_microservices = all_microservices
+    
+    print(f"[SUCCESS] Microservice list saved with {len(final_microservices)} services")
+    return final_microservices
 
-    with open(output_json_path, 'w') as out_f:
-        json.dump(final_microservices, out_f, indent=2)
 
-    print(f"[SUCCESS] Microservice list saved to {output_json_path} with {len(final_microservices)} services")
-
-# Example usage
-if __name__ == "__main__":
-    generate_microservice_list("file_analysis.json", "microservices_list.json")
+# # Example usage
+# if __name__ == "__main__":
+#     generate_microservice_list("file_analysis_sorted.json", "microservices_list.json")
