@@ -22,8 +22,3 @@ async def clone_repo(repo_url: str, destination_dir: str = "./cloned_repo"):
     except subprocess.CalledProcessError as e:
         print(f"[ERROR] Failed to clone repository: {e}")
         return False
-
-# if __name__ == "__main__":
-#     repo_url = "https://github.com/sivaprasadreddy/spring-modular-monolith.git"  # replace this
-#     destination = "./monolith_code"  # change if you want a different dir
-#     clone_repo(repo_url, destination)

@@ -7,42 +7,42 @@ from nodes.generate_report import generate_combined_markdown_from_json
 from nodes.insert_data import insert_data
 from nodes.check_db import check_db
 from langsmith import traceable
-from langchain_core.runnables.graph import MermaidDrawMethod
-
 from langgraph.graph import StateGraph, START, END
 from typing import TypedDict
 from fastapi import WebSocket
-
+# from langchain_core.runnables.graph import MermaidDrawMethod
 
 async def safe_send(socket: WebSocket, id: int, status: str, message: str = ""):
+    """Sends an 'update' message via WebSocket."""
     try:
-        await socket.send_json(
-            {
-                "type": "update",
-                "data": {
-                    "id": id,
-                    "status": status,
-                    "message": message
-                }
-            }
+        payload = {
+            "type": "update",
+            "data": {
+                "id": id,
+                "status": status,
+                "message": message,
+            },
+        }
+        await socket.send_json(payload)
+        print(
+            f"[WebSocket SENT] Type: update, ID: {id}, Status: {status}, Message: {message}"
         )
     except Exception as e:
-        print(f"[WebSocket Error] Failed to send message: {e}")
+        print(f"[WebSocket Error] Failed to send 'update' message: {e}")
 
-async def error_send(socket: WebSocket, id: int, message: str):
+async def error_send(socket: WebSocket, error_message: str):
+    """Sends a 'finished' message with error status via WebSocket."""
     try:
-        await socket.send_json(
-            {
-                "type": "finished",
-                "data": {
-                    "id": id,
-                    "status": "error",
-                    "message": message
-                }
-            }
+        payload = {
+            "type": "finished",
+            "data": {"status": "error", "message": error_message},
+        }
+        await socket.send_json(payload)
+        print(
+            f"[WebSocket SENT] Type: finished, Status: error, Message: {error_message}"
         )
     except Exception as e:
-        print(f"[WebSocket Error] Failed to send error message: {e}")
+        print(f"[WebSocket Error] Failed to send 'finished' error message: {e}")
 
 class ProjectState(TypedDict):
     repo_link: str
@@ -54,180 +54,269 @@ class ProjectState(TypedDict):
     microservice_output: dict
     result: str
     socket: WebSocket
-    error : bool
-
+    error_occurred: bool
 
 @traceable
 async def check_database(state: ProjectState) -> ProjectState:
-    print("Checking database")
+    print("--- Node: Check Database ---")
+    socket = state["socket"]
+    step_id = 1
     try:
-        await safe_send(state["socket"], 1, "processing", "Checking database")
+        await safe_send(
+            socket, step_id, "processing", "Checking database for existing analysis..."
+        )
         present, data = await check_db(state["repo_link"])
         if present:
-            print("[INFO] Data already exists for this repo. Skipping and analysis.")
+            print("[INFO] Data already exists for this repo. Skipping processing.")
             state["present"] = True
-            state["result"] = data["result"]
-            await safe_send(state["socket"], 1, "completed", "Data already exists")
+            state["result"] = data[
+                "result"
+            ]  
+            await safe_send(
+                socket, step_id, "completed", "Found existing analysis in database."
+            )
         else:
             state["present"] = False
-            await safe_send(state["socket"], 1, "completed", "Data not found")
+            await safe_send(socket, step_id, "completed", "No existing analysis found.")
             print("[INFO] Data not found in database.")
-        print("[INFO] Database check completed successfully.")
+        print("[INFO] Database check completed.")
     except Exception as e:
         print(f"[ERROR] Database check failed: {e}")
-        await error_send(state["socket"],1, "Database check failed.")
+        await error_send(socket, f"Database check failed: {str(e)}")
+        state["error_occurred"] = True  
     return state
-
 
 @traceable
 async def clone_repository(state: ProjectState) -> ProjectState:
+    print("--- Node: Clone Repository ---")
+    if state.get("error_occurred"):
+        return state  
+    socket = state["socket"]
+    step_id = 2
     try:
         print("Cloning repository")
-        await safe_send(state["socket"], 2, "processing", "Cloning repository")
+        await safe_send(
+            socket, step_id, "processing", f"Cloning repository: {state['repo_link']}"
+        )
         destination = state["destination"]
         repo_link = state["repo_link"]
         cloned = await clone_repo(repo_link, destination)
         if not cloned:
             print("[ERROR] Repository cloning failed.")
-            state["error"]=True
-            await error_send(state["socket"],2, "Repository cloning failed.")
+            await error_send(
+                socket, "Repository cloning failed. Check URL and permissions."
+            )
+            state["error_occurred"] = True  
         else:
-            await safe_send(state["socket"], 2, "completed", "Repository cloned")
+            await safe_send(
+                socket, step_id, "completed", "Repository cloned successfully."
+            )
             print("[INFO] Repository cloned successfully.")
     except Exception as e:
         print(f"[ERROR] Repository cloning failed: {e}")
-        await error_send(state["socket"],2, "Repository cloning failed.")
+        await error_send(socket, f"Repository cloning failed: {str(e)}")
+        state["error_occurred"] = True  
     return state
 
 
 @traceable
 async def analyze_repository(state: ProjectState) -> ProjectState:
-    if state["error"]:
-        print("[ERROR] Skipping analysis due to previous errors.")
-        return state
+    print("--- Node: Analyze Repository ---")
+    if state.get("error_occurred"):
+        return state  
+    socket = state["socket"]
+    step_id = 3  
     try:
         print("Analyzing repository")
-        await safe_send(state["socket"], 3, "processing", "Analyzing repository")
         
+        await safe_send(
+            socket,
+            step_id,
+            "processing",
+            "Analyzing code structure and dependencies...",
+        )
         file_analysis = await analyze_repo_code(state["destination"])
         state["file_analysis"] = file_analysis
-        
-        print("[INFO] Repository analysis completed successfully.")
+        print("[INFO] Repository analysis part completed.")
         
     except Exception as e:
         print(f"[ERROR] Repository analysis failed: {e}")
-        await error_send(state["socket"],3, "Repository analysis failed.")
-        
+        await error_send(socket, f"Repository analysis failed: {str(e)}")
+        await safe_send(
+            socket, step_id, "error", "Analysis failed."
+        )  
+        state["error_occurred"] = True  
     return state
 
 @traceable
 async def sort_files_based_on_dependencies(state: ProjectState) -> ProjectState:
-    if state["error"]:
-        print("[ERROR] Skipping sorting due to previous errors.")
-        return state
+    print("--- Node: Sort Files ---")
+    if state.get("error_occurred"):
+        return state  
+    socket = state["socket"]
+    step_id = 3  
     try:
-        print("Topological sorting")
+        print("Topological sorting")     
         sorted_files = await topological_sort(state["file_analysis"])
         state["sorted_files"] = sorted_files
-        await safe_send(state["socket"], 3, "completed", "Repository analyzed")
+        print("[INFO] Topological sorting completed.")
+        
+        await safe_send(
+            socket,
+            step_id,
+            "completed",
+            "Code analysis and dependency sorting complete.",
+        )
     except Exception as e:
         print(f"[ERROR] Topological sorting failed: {e}")
-        await error_send(state["socket"],3, "Topological sorting failed.")
+        await error_send(socket, f"Topological sorting failed: {str(e)}")
+        await safe_send(
+            socket, step_id, "error", "Dependency sorting failed."
+        )  
+        state["error_occurred"] = True  
     return state
-
 
 @traceable
 async def generate_microservice_list_graph(state: ProjectState) -> ProjectState:
-    if state["error"]:
-        print("[ERROR] Skipping microservice list generation due to previous errors.")
-        return state
+    print("--- Node: Generate Microservice List ---")
+    if state.get("error_occurred"):
+        return state  
+    socket = state["socket"]
+    step_id = 4
     try:
         print("Generating microservice list")
-        await safe_send(state["socket"], 4, "processing", "Generating microservice list")
-        
+        await safe_send(
+            socket,
+            step_id,
+            "processing",
+            "Identifying potential microservice boundaries...",
+        )
         micro_services_list = await generate_microservice_list(state["sorted_files"])
         state["micro_services_list"] = micro_services_list
-        
-        await safe_send(state["socket"], 4, "completed", "Microservice list generated")
+        await safe_send(
+            socket, step_id, "completed", "Potential microservices identified."
+        )
         print("[INFO] Microservice list generated successfully.")
-        
     except Exception as e:
         print(f"[ERROR] Generating microservice list failed: {e}")
-        await error_send(state["socket"],4, "Generating microservice list failed.")
-        
+        await error_send(socket, f"Generating microservice list failed: {str(e)}")
+        await safe_send(
+            socket, step_id, "error", "Failed to identify microservices."
+        )  
+        state["error_occurred"] = True  
     return state
 
 
 @traceable
 async def generate_microservice_code_plan(state: ProjectState) -> ProjectState:
-    if state["error"]:
-        print("[ERROR] Skipping code plan generation due to previous errors.")
-        return state
+    print("--- Node: Generate Code Plan ---")
+    if state.get("error_occurred"):
+        return state  
+    socket = state["socket"]
+    step_id = 5
     try:
         print("Generating microservice code plan")
-        await safe_send(state["socket"], 5, "processing", "Generating microservice code plan")
-        
+        await safe_send(
+            socket,
+            step_id,
+            "processing",
+            "Mapping files and functions to microservices...",
+        )
         microservice_output = await generate_microservice_code_plan_threaded(
             state["sorted_files"], state["micro_services_list"]
         )
         state["microservice_output"] = microservice_output
-        
-        await safe_send(state["socket"], 5, "completed", "Microservice code plan generated")
+        await safe_send(
+            socket, step_id, "completed", "Code plan for microservices generated."
+        )
         print("[INFO] Microservice code plan generated successfully.")
-        
     except Exception as e:
         print(f"[ERROR] Generating microservice code plan failed: {e}")
-        await error_send(state["socket"],5, "Generating microservice code plan failed.")
-        
+        await error_send(socket, f"Generating microservice code plan failed: {str(e)}")
+        await safe_send(
+            socket, step_id, "error", "Failed to generate code plan."
+        )  
+        state["error_occurred"] = True  
     return state
 
 
 @traceable
 async def generate_combined_markdown(state: ProjectState) -> ProjectState:
-    if state["error"]:
-        print("[ERROR] Skipping combined markdown generation due to previous errors.")
-        return state
+    print("--- Node: Generate Combined Markdown ---")
+    if state.get("error_occurred"):
+        return state  
+    socket = state["socket"]
+    step_id = 6
     try:
-        print("Generating combined markdown")
-        await safe_send(state["socket"], 6, "processing", "Generating combined markdown")
-        
-        result = await generate_combined_markdown_from_json(state["microservice_output"])
+        print("Generating combined markdown report")
+        await safe_send(
+            socket, step_id, "processing", "Compiling the final migration report..."
+        )
+        result = await generate_combined_markdown_from_json(
+            state["microservice_output"]
+        )
         state["result"] = result
         
         print("[INFO] Combined markdown generated successfully.")
-        
     except Exception as e:
         print(f"[ERROR] Generating combined markdown failed: {e}")
-        await error_send(state["socket"],6, "Generating combined markdown failed.")
-        
+        await error_send(
+            socket, f"Generating combined markdown report failed: {str(e)}"
+        )
+        await safe_send(
+            socket, step_id, "error", "Failed to generate report."
+        )  
+        state["error_occurred"] = True  
     return state
-
 
 @traceable
 async def insert_data_into_database(state: ProjectState) -> ProjectState:
-    if state["error"]:
-        print("[ERROR] Skipping data insertion due to previous errors.")
-        return state
+    print("--- Node: Insert into Database ---")
+    if state.get("error_occurred"):
+        return state  
+    socket = state["socket"]
+    step_id = 6  
     try:
         print("Inserting data into database")
         if await insert_data(state["repo_link"], state["result"]):
-            print("[SUCCESS] Data inserted successfully.")
+            print("[SUCCESS] Data inserted/updated successfully.")
+            await safe_send(
+                socket, step_id, "completed", "Migration report generated and saved."
+            )
         else:
-            print("[FAILED] Data insertion failed.")
+            
+            print("[WARNING] Data insertion/update failed. Report still generated.")
+            
+            await safe_send(
+                socket,
+                step_id,
+                "completed",
+                "Migration report generated (database save failed).",
+            )
     except Exception as e:
+        
         print(f"[ERROR] Data insertion failed: {e}")
-    await safe_send(state["socket"], 6, "completed", "Combined markdown generated")
+        
+        await safe_send(
+            socket,
+            step_id,
+            "completed",
+            f"Migration report generated (database save error: {e}).",
+        )
     return state
 
-
 @traceable
-async def exists_in_database(state: ProjectState) -> ProjectState:
-    print("Check if data exists in database")
+async def should_process_repo(state: ProjectState) -> str:
+    print("--- Edge: Check DB Result ---")
+    if state.get("error_occurred"):
+        print("[INFO] Error occurred in Check DB, stopping.")
+        return END  
     if state["present"]:
-        return "Present"
+        print("[INFO] Data found in DB. Path: Present")
+        return "Present"  
     else:
-        return "Not Present"
-
+        print("[INFO] Data not found in DB. Path: Not Present")
+        return "Not Present"  
 
 graph = StateGraph(ProjectState)
 
@@ -243,16 +332,20 @@ graph.add_node("Generate Combine Markdown", generate_combined_markdown)
 graph.add_node("Insert into Database", insert_data_into_database)
 
 graph.add_edge(START, "Check Database")
+
 graph.add_conditional_edges(
     "Check Database",
-    exists_in_database,
-    {"Not Present": "Clone Repository", "Present": END},
+    should_process_repo,
+    {
+        "Not Present": "Clone Repository",  
+        "Present": END,  
+        END: END,  
+    },
 )
+
 graph.add_edge("Clone Repository", "Analyse Repository Files")
 graph.add_edge("Analyse Repository Files", "Sort Files based on Internal Dependencies")
-graph.add_edge(
-    "Sort Files based on Internal Dependencies", "Generate Microservices List"
-)
+graph.add_edge("Sort Files based on Internal Dependencies", "Generate Microservices List")
 graph.add_edge("Generate Microservices List", "Generate Code Plan")
 graph.add_edge("Generate Code Plan", "Generate Combine Markdown")
 graph.add_edge("Generate Combine Markdown", "Insert into Database")
@@ -260,8 +353,7 @@ graph.add_edge("Insert into Database", END)
 
 app = graph.compile()
 
-
-async def invoke_graph(repo_url: str, destination: str, socket: WebSocket=None):
+async def invoke_graph(repo_url: str, destination: str, socket: WebSocket):
     state = ProjectState(
         repo_link=repo_url,
         destination=destination,
@@ -272,29 +364,49 @@ async def invoke_graph(repo_url: str, destination: str, socket: WebSocket=None):
         microservice_output={},
         result="",
         socket=socket,
-        error=False
+        error_occurred=False,  
     )
-    final_state = await app.ainvoke(state)
-
-    if not  final_state["error"]:
-        await final_state["socket"].send_json(
-        {
-            "type": "finished",
-            "data": {
-                "id": 6,
-                "status": "completed",
-                "message": "✅ Migration analysis complete. Report is ready for download.",
-                "downloadContent": final_state["result"]
-            }
-        }
-)
-
-
+    final_state = None
+    try:
+        print("\nInvoking LangGraph execution...")
+        final_state = await app.ainvoke(state)
+        print("LangGraph execution finished.")
+        
+        if final_state.get("error_occurred"):
+            print(
+                "[INFO] Graph finished, but an error occurred previously. No success message sent."
+            )
+            
+            return
+        
+        if final_state and final_state.get("result"):
+            print("[INFO] Sending final 'finished' success message.")
+            await socket.send_json(
+                {
+                    "type": "finished",
+                    "data": {
+                        "status": "completed",
+                        "message": final_state["result"],  
+                    },
+                }
+            )
+            print("[WebSocket SENT] Type: finished, Status: completed")
+        else:
+            print("[WARNING] Graph finished but no result found in final state.")
+            await error_send(
+                socket, "Processing finished, but no result was generated."
+            )
+    except Exception as e:
+        print(f"[CRITICAL ERROR] Error invoking graph: {e}")
+        if final_state and not final_state.get("error_occurred"):
+            await error_send(
+                socket, f"An unexpected error occurred during processing: {str(e)}"
+            )
 
 # if __name__ == "__main__":
-
+    
 #     img = app.get_graph().draw_mermaid_png(draw_method=MermaidDrawMethod.API)
-
+    
 #     with open ("graph.png", "wb") as f:
 #         f.write(img)
 
