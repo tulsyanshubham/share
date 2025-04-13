@@ -17,20 +17,32 @@ from fastapi import WebSocket
 async def safe_send(socket: WebSocket, id: int, status: str, message: str = ""):
     try:
         await socket.send_json(
-            {"step": "update", "data": {"id": id, "status": status, "message": message}}
+            {
+                "type": "update",
+                "data": {
+                    "id": id,
+                    "status": status,
+                    "message": message
+                }
+            }
         )
     except Exception as e:
         print(f"[WebSocket Error] Failed to send message: {e}")
 
-async def error_send(socket: WebSocket, error: str):
+async def error_send(socket: WebSocket, id: int, message: str):
     try:
-        await socket.send_json({
-            "step":"completed",
-            "success": False,
-            "error": error
-        })
+        await socket.send_json(
+            {
+                "type": "finished",
+                "data": {
+                    "id": id,
+                    "status": "error",
+                    "message": message
+                }
+            }
+        )
     except Exception as e:
-        print(f"[WebSocket Error] Failed to send message: {e}")
+        print(f"[WebSocket Error] Failed to send error message: {e}")
 
 class ProjectState(TypedDict):
     repo_link: str
@@ -42,6 +54,7 @@ class ProjectState(TypedDict):
     microservice_output: dict
     result: str
     socket: WebSocket
+    error : bool
 
 
 @traceable
@@ -51,7 +64,7 @@ async def check_database(state: ProjectState) -> ProjectState:
         await safe_send(state["socket"], 1, "processing", "Checking database")
         present, data = await check_db(state["repo_link"])
         if present:
-            print("[INFO] Data already exists for this repo. Skipping cloning and analysis.")
+            print("[INFO] Data already exists for this repo. Skipping and analysis.")
             state["present"] = True
             state["result"] = data["result"]
             await safe_send(state["socket"], 1, "completed", "Data already exists")
@@ -62,7 +75,7 @@ async def check_database(state: ProjectState) -> ProjectState:
         print("[INFO] Database check completed successfully.")
     except Exception as e:
         print(f"[ERROR] Database check failed: {e}")
-        await error_send(state["socket"], "Database check failed.")
+        await error_send(state["socket"],1, "Database check failed.")
     return state
 
 
@@ -76,18 +89,22 @@ async def clone_repository(state: ProjectState) -> ProjectState:
         cloned = await clone_repo(repo_link, destination)
         if not cloned:
             print("[ERROR] Repository cloning failed.")
-            await error_send(state["socket"], "Repository cloning failed.")
+            state["error"]=True
+            await error_send(state["socket"],2, "Repository cloning failed.")
         else:
             await safe_send(state["socket"], 2, "completed", "Repository cloned")
             print("[INFO] Repository cloned successfully.")
     except Exception as e:
         print(f"[ERROR] Repository cloning failed: {e}")
-        await error_send(state["socket"], "Repository cloning failed.")
+        await error_send(state["socket"],2, "Repository cloning failed.")
     return state
 
 
 @traceable
 async def analyze_repository(state: ProjectState) -> ProjectState:
+    if state["error"]:
+        print("[ERROR] Skipping analysis due to previous errors.")
+        return state
     try:
         print("Analyzing repository")
         await safe_send(state["socket"], 3, "processing", "Analyzing repository")
@@ -99,12 +116,15 @@ async def analyze_repository(state: ProjectState) -> ProjectState:
         
     except Exception as e:
         print(f"[ERROR] Repository analysis failed: {e}")
-        await error_send(state["socket"], "Repository analysis failed.")
+        await error_send(state["socket"],3, "Repository analysis failed.")
         
     return state
 
 @traceable
 async def sort_files_based_on_dependencies(state: ProjectState) -> ProjectState:
+    if state["error"]:
+        print("[ERROR] Skipping sorting due to previous errors.")
+        return state
     try:
         print("Topological sorting")
         sorted_files = await topological_sort(state["file_analysis"])
@@ -112,12 +132,15 @@ async def sort_files_based_on_dependencies(state: ProjectState) -> ProjectState:
         await safe_send(state["socket"], 3, "completed", "Repository analyzed")
     except Exception as e:
         print(f"[ERROR] Topological sorting failed: {e}")
-        await error_send(state["socket"], "Topological sorting failed.")
+        await error_send(state["socket"],3, "Topological sorting failed.")
     return state
 
 
 @traceable
 async def generate_microservice_list_graph(state: ProjectState) -> ProjectState:
+    if state["error"]:
+        print("[ERROR] Skipping microservice list generation due to previous errors.")
+        return state
     try:
         print("Generating microservice list")
         await safe_send(state["socket"], 4, "processing", "Generating microservice list")
@@ -130,13 +153,16 @@ async def generate_microservice_list_graph(state: ProjectState) -> ProjectState:
         
     except Exception as e:
         print(f"[ERROR] Generating microservice list failed: {e}")
-        await error_send(state["socket"], "Generating microservice list failed.")
+        await error_send(state["socket"],4, "Generating microservice list failed.")
         
     return state
 
 
 @traceable
 async def generate_microservice_code_plan(state: ProjectState) -> ProjectState:
+    if state["error"]:
+        print("[ERROR] Skipping code plan generation due to previous errors.")
+        return state
     try:
         print("Generating microservice code plan")
         await safe_send(state["socket"], 5, "processing", "Generating microservice code plan")
@@ -151,13 +177,16 @@ async def generate_microservice_code_plan(state: ProjectState) -> ProjectState:
         
     except Exception as e:
         print(f"[ERROR] Generating microservice code plan failed: {e}")
-        await error_send(state["socket"], "Generating microservice code plan failed.")
+        await error_send(state["socket"],5, "Generating microservice code plan failed.")
         
     return state
 
 
 @traceable
 async def generate_combined_markdown(state: ProjectState) -> ProjectState:
+    if state["error"]:
+        print("[ERROR] Skipping combined markdown generation due to previous errors.")
+        return state
     try:
         print("Generating combined markdown")
         await safe_send(state["socket"], 6, "processing", "Generating combined markdown")
@@ -169,13 +198,16 @@ async def generate_combined_markdown(state: ProjectState) -> ProjectState:
         
     except Exception as e:
         print(f"[ERROR] Generating combined markdown failed: {e}")
-        await error_send(state["socket"], "Generating combined markdown failed.")
+        await error_send(state["socket"],6, "Generating combined markdown failed.")
         
     return state
 
 
 @traceable
 async def insert_data_into_database(state: ProjectState) -> ProjectState:
+    if state["error"]:
+        print("[ERROR] Skipping data insertion due to previous errors.")
+        return state
     try:
         print("Inserting data into database")
         if await insert_data(state["repo_link"], state["result"]):
@@ -240,12 +272,23 @@ async def invoke_graph(repo_url: str, destination: str, socket: WebSocket=None):
         microservice_output={},
         result="",
         socket=socket,
+        error=False
     )
     final_state = await app.ainvoke(state)
-    
-    await state["socket"].send_json(
-        { "success": True, "downloadContent": final_state["result"]}
-    )
+
+    if not  final_state["error"]:
+        await final_state["socket"].send_json(
+        {
+            "type": "finished",
+            "data": {
+                "id": 6,
+                "status": "completed",
+                "message": "✅ Migration analysis complete. Report is ready for download.",
+                "downloadContent": final_state["result"]
+            }
+        }
+)
+
 
 
 # if __name__ == "__main__":

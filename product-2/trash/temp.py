@@ -9,7 +9,7 @@ from autogen import ConversableAgent
 
 # === Load environment variables ===
 load_dotenv()
-OPEN_API_KEY = os.getenv("OPEN_AI_API_KEY")
+OPEN_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # === Config ===
 OPEN_API_URL = "https://api.openai.com/v1/chat/completions"

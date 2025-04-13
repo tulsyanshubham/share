@@ -17,7 +17,7 @@ socket = None
 result = ""
 
 initial_socket_response = {
-    'steps':'init',
+    'type':'init',
     "data" : [{
         "id": 1,
         "title": "Check Database",
@@ -54,17 +54,24 @@ initial_socket_response = {
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     try:
-        await websocket.send_json(initial_socket_response)
         repo_url = await websocket.receive_text()
 
         # 🧠 Call the main function that does your pipeline
         if repo_url:
+            await websocket.send_json(initial_socket_response)
             # 🧠 Start pipeline only after getting a repo URL
             await invoke_graph(repo_url, "./monolith_code", websocket)
-
-            await websocket.send_json({"msg": "✅ Migration analysis complete."})
         else:
-            await websocket.send_json({"msg": "❌ No repo URL received."})
+            await socket.send_json(
+            {
+                "type": "finished",
+                "data": {
+                    "id": id,
+                    "status": "error",
+                    "message": "No repository URL provided."
+                }
+            }
+        )
         await websocket.close()
 
     except WebSocketDisconnect:

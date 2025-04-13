@@ -10,7 +10,7 @@ from autogen import ConversableAgent
 
 # === Load environment variables ===
 load_dotenv()
-GROQ_API_KEY = os.getenv("OPEN_AI_API_KEY")
+GROQ_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
 

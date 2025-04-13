@@ -83,7 +83,7 @@
         msg.textContent = text;
         messagesDiv.appendChild(msg);
     }
-        socket = new WebSocket("ws://localhost:8000/ws");
+        socket = new WebSocket("http://127.0.0.1:8000/ws");
         socket.onmessage = (event) => {
             appendMessage("📨 " + event.data);
         };

@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-openai.api_key = os.environ.get("OPEN_AI_API_KEY")
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 MAX_CHARS = 8000
 max_threads = 8

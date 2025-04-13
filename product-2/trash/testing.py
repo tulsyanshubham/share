@@ -8,7 +8,7 @@ llm_config = {
     "config_list": [
         {
             "model": "gpt-4",
-            "api_key": os.getenv("OPEN_AI_API_KEY")
+            "api_key": os.getenv("OPENAI_API_KEY")
         }
     ],
     "timeout": 120

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-openai.api_key = os.environ.get("OPEN_AI_API_KEY")
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 def clean_json_output(text):
     return re.sub(r"^```(?:json)?|```$", "", text.strip(), flags=re.IGNORECASE).strip()
