@@ -14,14 +14,14 @@ def upsert_migration(data: dict):
         )
 
         if result.upserted_id:
-            print("[✅] Data inserted successfully.")
+            print("[INFO] Data inserted successfully.")
         elif result.modified_count > 0:
-            print("[✅] Existing data updated successfully.")
+            print("[INFO] Existing data updated successfully.")
         else:
-            print("[ℹ️] No changes made (data may already be up to date).")
+            print("[INFO] No changes made (data may already be up to date).")
 
     except ValidationError as e:
-        print("[❌] Validation failed:", e)
+        print("[ERROR] Validation failed:", e)
 
 async def insert_data(repo_link: str, result: str):
     REPO_LINK = repo_link.split("github.com/")[-1].replace(".git", "").strip()
@@ -33,5 +33,5 @@ async def insert_data(repo_link: str, result: str):
         upsert_migration(data)
         return True
     except Exception as e:
-        print("[❌] Upsert failed:", e)
+        print("[ERROR] Upsert failed:", e)
         return False

@@ -67,7 +67,6 @@ async def generate_combined_markdown_from_json(microservice_outputs):
 
     for ms_name, ms_data in microservice_outputs.items():
         q.put((ms_name, ms_data))
-
     q.join()
 
     for _ in range(NUM_WORKER_THREADS):

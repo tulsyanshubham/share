@@ -1,7 +1,6 @@
 import os
 import shutil
 import subprocess
-from urllib.parse import urlparse
 
 def handle_remove_readonly(func, path, exc_info):
     import stat

@@ -36,7 +36,6 @@ def get_microservices_from_chunk(chunk_data):
     your task is to group related files into a limited number of business-focused microservices.
 
     ✅ STRICT REQUIREMENTS:
-    - Return ONLY between **4 and 9 microservices**.
     - If you identify more than 9 logical groupings, COMBINE the most closely related ones.
     - DO NOT exceed 9 microservices under any circumstance.
     - Each microservice should serve a broad business function.
@@ -112,7 +111,7 @@ def merge_microservices_with_llm(microservices, target_min=5, target_max=9):
         return merged_microservices
     except Exception as e:
         print(f"[ERROR] Failed to parse LLM merge output: {e}")
-        return microservices  # Fallback if LLM output breaks
+        return microservices
 
 async def generate_microservice_list(analysis_data):
     all_chunks = chunk_json_objects(analysis_data)

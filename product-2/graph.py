@@ -390,6 +390,8 @@ async def invoke_graph(repo_url: str, destination: str, socket: WebSocket):
                     },
                 }
             )
+            with (open("migration_plan.md", "w", encoding="utf-8")) as f:
+                f.write(final_state["result"])
             print("[WebSocket SENT] Type: finished, Status: completed")
         else:
             print("[WARNING] Graph finished but no result found in final state.")

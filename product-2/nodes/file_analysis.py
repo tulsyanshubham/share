@@ -13,8 +13,18 @@ openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 MAX_CHARS = 8000
 max_threads = 8
-# TODO-> add more skip files
-skip_files = ('package-info.java', 'module-info.java', 'pom.xml', 'Dockerfile', '.gitignore', 'README.md', '.git', "Test.java", "Tests.java")
+
+skip_files = (
+    'package-info.java', 'module-info.java', 'pom.xml', 'Dockerfile',
+    '.gitignore', 'README.md', 'LICENSE', 'Makefile', '.editorconfig',
+    '.env', '.dockerignore', '.prettierrc', '.eslintrc', '.babelrc',
+    'yarn.lock', 'pnpm-lock.yaml', 'package-lock.json', 'tsconfig.json',
+    'Test.java', 'Tests.java'
+)
+consider_extensions = (
+    '.py', '.js', '.ts', '.java', '.go', '.rb', '.cs', '.cpp', '.c',
+    '.kt', '.swift', '.rs', '.php'
+)
 
 def read_code_file(file_path: Path) -> List[str]:
     with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
@@ -47,7 +57,6 @@ def worker(queue: Queue, results: List[dict], lock: threading.Lock):
     while not queue.empty():
         file_path = queue.get()
         file = file_path.name
-
         print(f"[INFO] Analyzing {file_path}")
         try:
             file_chunks = read_code_file(file_path)
@@ -58,7 +67,6 @@ def worker(queue: Queue, results: List[dict], lock: threading.Lock):
                 "external_dependencies": [],
                 "functions": []
             }
-
             for chunk in file_chunks:
                 try:
                     analysis = analyze_chunk(chunk, file)
@@ -68,14 +76,10 @@ def worker(queue: Queue, results: List[dict], lock: threading.Lock):
                     combined_analysis["functions"].extend(data.get("functions", []))
                 except Exception as e:
                     print(f"[ERROR] Failed analyzing chunk from {file}: {e}")
-
-            # Remove duplicates
             combined_analysis["internal_dependencies"] = list(set(combined_analysis["internal_dependencies"]))
             combined_analysis["external_dependencies"] = list(set(combined_analysis["external_dependencies"]))
-
             with lock:
                 results.append(combined_analysis)
-
         except Exception as e:
             print(f"[ERROR] Failed analyzing file {file_path}: {e}")
         finally:
@@ -85,21 +89,15 @@ async def analyze_repo_code(repo_path: str) -> List[dict]:
     file_queue = Queue()
     results = []
     lock = threading.Lock()
-
-    # Populate queue with all valid code files
     for root, _, files in os.walk(repo_path):
         for file in files:
-            if file.endswith(('.py', '.js', '.ts', '.java', '.go', '.rb')) and not file.endswith(skip_files):
+            if file.endswith(consider_extensions) and not file.endswith(skip_files):
                 file_queue.put(Path(root) / file)
-
-    # Start worker threads
     threads = []
     for _ in range(min(max_threads, file_queue.qsize())):
         t = threading.Thread(target=worker, args=(file_queue, results, lock))
         t.start()
         threads.append(t)
-
-    # Wait for all threads to finish
     for t in threads:
         t.join()
 

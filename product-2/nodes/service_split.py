@@ -14,7 +14,7 @@ def clean_json_output(text):
     return re.sub(r"^```(?:json)?|```$", "", text.strip(), flags=re.IGNORECASE).strip()
 
 def analyze_file_and_assign(file_obj, microservices):
-    print(f"[INFO] Analyzing {file_obj['file_name']}")
+    print(f"[INFO] Analyzing and splitting {file_obj['file_name']}")
     prompt = f"""
 You are an expert software architect helping migrate a monolithic codebase to microservices.
 
