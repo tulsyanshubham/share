@@ -21,9 +21,13 @@ skip_files = (
     'yarn.lock', 'pnpm-lock.yaml', 'package-lock.json', 'tsconfig.json',
     'Test.java', 'Tests.java'
 )
+
 consider_extensions = (
     '.py', '.js', '.ts', '.java', '.go', '.rb', '.cs', '.cpp', '.c',
-    '.kt', '.swift', '.rs', '.php'
+    '.kt', '.kts',
+    '.swift', '.rs', '.php',
+    '.cbl', '.cob',
+    '.for', '.f', '.f90', '.f95',
 )
 
 def read_code_file(file_path: Path) -> List[str]:

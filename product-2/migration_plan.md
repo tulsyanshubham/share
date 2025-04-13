@@ -1,511 +1,726 @@
 # Microservice Migration Summary
 
-# Microservice Report: ApplicationManagementService
+# BaseEntityAuditService Microservice Migration Report
 
 ## Overview
-The ApplicationManagementService is a microservice that manages the application lifecycle. This microservice is responsible for starting the application and managing its dependencies such as PostgreSQL, RabbitMQ, and Zipkin containers.
 
-## File List
+The BaseEntityAuditService is a microservice that handles the auditing of base entities in the system. It is responsible for setting the creation and change dates for these entities. This report provides a detailed analysis of the microservice's structure and a step-by-step guide on how to migrate it from a monolithic architecture to a microservices architecture.
 
-### 1. BookStoreApplication.java
+## List of Files
 
-**File Path:** `application_management/domain/BookStoreApplication.java`
+### BaseEntityAudit.java
 
-**Purpose:** This file contains the main function that starts the Spring Application.
+**File Path:** `base_entity_audit/domain/BaseEntityAudit.java`
 
-**Functions:**
+**File Purpose:** This Java file contains the core logic for the BaseEntityAuditService. It includes functions for setting the creation and change dates for base entities.
 
-- `main`: The main function which starts the Spring Application.
+#### Functions
 
-### 2. TestBookStoreApplication.java
+1. `setCreationDate`
 
-**File Path:** `applicationmanagement/test/TestBookStoreApplication.java`
+   - **Description:** This function sets the `createdAt` date before an entity is inserted into the system. It does not call any other microservices.
 
-**Purpose:** This file contains the main method that runs the application. It uses SpringApplication from Spring Boot to run the BookStoreApplication's main method with TestcontainersConfiguration.
+2. `setChangeDate`
 
-**Functions:**
+   - **Description:** This function sets the `updatedAt` date before an entity is updated in the system. It does not call any other microservices.
 
-- `main`: The main method that runs the application. It uses SpringApplication from Spring Boot to run the BookStoreApplication's main method with TestcontainersConfiguration.
+## Migration Process from Monolith to Microservices Architecture
 
-### 3. TestcontainersConfiguration.java
+The following steps outline the process of migrating the BaseEntityAuditService from a monolithic architecture to a microservices architecture:
 
-**File Path:** `application_management/config/TestcontainersConfiguration.java`
+1. **Identify the Service Boundaries:** Identify the functionality provided by the BaseEntityAuditService within the monolithic application.
 
-**Purpose:** This file manages the configuration of the test containers for the application.
+2. **Decouple the Service:** Decouple the BaseEntityAuditService from the monolithic application. This involves separating the code, data storage, and any other dependencies.
 
-**Functions:**
+3. **Create a Standalone Service:** Create a standalone microservice for BaseEntityAuditService. This includes setting up its own code repository, database, and any other necessary infrastructure.
 
-- `postgresContainer`: This function returns a PostgreSQL container.
-- `rabbitmq`: This function returns a RabbitMQ container.
-- `zipkinContainer`: This function returns a Zipkin container.
+4. **Define the API:** Define the API for the BaseEntityAuditService. This includes the endpoints, request/response formats, and error handling.
 
-## Migration to Microservices Architecture
+5. **Implement the Service:** Implement the BaseEntityAuditService using the decoupled code. This includes implementing the `setCreationDate` and `setChangeDate` functions.
 
-To migrate from a monolithic architecture to a microservices architecture, follow these steps:
+6. **Test the Service:** Thoroughly test the BaseEntityAuditService to ensure it works correctly and efficiently.
 
-1. **Identify Business Capabilities:** Start by identifying the business capabilities of your application. This will help you to define the boundaries of your microservices.
+7. **Deploy the Service:** Deploy the BaseEntityAuditService to a production environment.
 
-2. **Decompose the Monolith:** Break down the monolith into smaller, manageable microservices. Each microservice should have a single responsibility and should be independently deployable.
-
-3. **Define Communication Protocols:** Define how the microservices will communicate with each other. This could be through HTTP/REST, gRPC, or event-driven communication.
-
-4. **Implement Service Discovery:** Implement a service discovery mechanism to allow microservices to discover and communicate with each other.
-
-5. **Implement API Gateway:** Implement an API Gateway to handle client requests and route them to the appropriate microservice.
-
-6. **Implement Distributed Tracing:** Implement distributed tracing to help debug and monitor your microservices.
-
-7. **Implement CI/CD:** Implement Continuous Integration and Continuous Deployment (CI/CD) to automate the deployment of your microservices.
-
-8. **Test:** Finally, thoroughly test your microservices to ensure they work correctly.
+8. **Monitor the Service:** Continuously monitor the BaseEntityAuditService to ensure it is performing as expected and to quickly identify and resolve any issues.
 
 ## Dependency Hierarchy
 
 ```
-ApplicationManagementService
-|
-|-- BookStoreApplication.java
-|
-|-- TestBookStoreApplication.java
-|
-|-- TestcontainersConfiguration.java
-    |-- postgresContainer
-    |-- rabbitmq
-    |-- zipkinContainer
+BaseEntityAuditService
+├── BaseEntityAudit.java
+│   ├── setCreationDate
+│   └── setChangeDate
 ```
 
-Note: None of the functions in these files call other microservices.
+This hierarchy shows that the BaseEntityAuditService is composed of the BaseEntityAudit.java file, which contains two functions: `setCreationDate` and `setChangeDate`.
+
+---
+
+# ValidationService Microservice
+
+## Overview
+The ValidationService is a microservice that handles the validation of parameters within the system. It consists of several files, each containing specific functions that contribute to the overall functionality of the service.
+
+## Migration from Monolith to Microservices
+The process of migrating from a monolithic architecture to a microservices architecture involves breaking down the monolithic application into smaller, independent services. Each service should have a specific functionality and should be able to operate independently.
+
+For the ValidationService, the migration process would involve the following steps:
+
+1. **Identify the functionality of the ValidationService in the monolithic application:** This involves understanding what the service does and how it interacts with other services.
+
+2. **Design the ValidationService as an independent service:** This involves defining the service's API and data model.
+
+3. **Implement the ValidationService:** This involves writing the code for the service and ensuring that it works as expected.
+
+4. **Test the ValidationService:** This involves testing the service in isolation and in conjunction with other services.
+
+5. **Deploy the ValidationService:** This involves deploying the service in a production environment.
+
+6. **Monitor the ValidationService:** This involves monitoring the service to ensure that it is working as expected and to identify any issues that may arise.
+
+## Files and Functions
+### File: ValidParamNumberConstraintValidator.java
+**File Path:** validation/constraint/ValidParamNumberConstraintValidator.java
+
+This file contains two functions, `initialize` and `isValid`, which are used to initialize and validate a given Long value according to the constraint.
+
+- **Function: initialize**
+  - Description: A function that initializes the ValidParamNumber constraint. It doesn't have any internal dependencies.
+  - Calls to other microservices: None
+
+- **Function: isValid**
+  - Description: A function that checks if a given Long value is valid according to the constraint. It doesn't have any internal dependencies.
+  - Calls to other microservices: None
+
+### File: ValidParamNumber.java
+**File Path:** validation/constraint/ValidParamNumber.java
+
+This file contains three functions, `message`, `groups`, and `payload`, which are used to return a default message, an array of Class objects, and an array of Payload objects, respectively.
+
+- **Function: message**
+  - Description: A function that returns a default message 'Must greater than 0 and lower than 2^63-1'.
+  - Calls to other microservices: None
+
+- **Function: groups**
+  - Description: A function that returns an array of Class objects, default is an empty array.
+  - Calls to other microservices: None
+
+- **Function: payload**
+  - Description: A function that returns an array of Payload objects, default is an empty array.
+  - Calls to other microservices: None
+
+### File: UserController.java
+**File Path:** validation/api/UserController.java
+
+This file contains a function, `validatePathVariable`, which is used to validate the path variable id.
+
+- **Function: validatePathVariable**
+  - Description: Validates the path variable id.
+  - Calls to other microservices: None
+
+## Dependency Hierarchy
+The ValidationService does not have any dependencies on other microservices. All functions are self-contained and do not call other microservices.
 
 ---
 
 # Microservice Migration Report
 
-## Microservice Name: CommonUtilityService
+## Microservice Name: DocumentationService
 
 ### Overview
-The CommonUtilityService is a microservice that provides utility functions for other services in the system. It includes two main files: PagedResult.java and RabbitMQConfig.java.
+The DocumentationService is responsible for handling the documentation of the application. This includes serving the Swagger user interface HTML page and configuring the Swagger API Documentation framework.
 
-### File Structure
+### File List and Details
 
-#### 1. PagedResult.java
-- **File Path**: common/models/PagedResult.java
-- **Purpose**: This file contains the PagedResult class, which is used to handle paginated results in the system.
+#### File: ApiDocsController.java
+- **File Path:** documentation/web/ApiDocsController.java
+- **Purpose:** This file serves as a controller for handling requests related to API documentation. It is responsible for serving the Swagger user interface HTML page configured to the mapped context path.
+- **Functions:**
+  - `getSwaggerApiDocsPage`: Request handler to serve the Swagger user interface HTML page configured to the mapped context path.
 
-##### Functions
-- **PagedResult**: A constructor that takes a Page object and initializes the PagedResult object with its properties.
-- **of**: A static method that takes a PagedResult object and a Function object, applies the function to the data of the PagedResult object, and returns a new PagedResult object with the transformed data.
+#### File: SwaggerConfig.java
+- **File Path:** documentation/config/SwaggerConfig.java
+- **Purpose:** This file is responsible for configuring the Swagger API Documentation framework. It creates the necessary classes (Contact, ApiInfo, Docket) to be used by the framework.
+- **Functions:**
+  - `contact`: Create a Contact class to be used by Springfox's Swagger API Documentation framework.
+  - `apiInfo`: Create an ApiInfo class to be used by Springfox's Swagger API Documentation framework.
+  - `docket`: Create a Docket class to be used by Springfox's Swagger API Documentation framework.
 
-#### 2. RabbitMQConfig.java
-- **File Path**: commonutility/config/RabbitMQConfig.java
-- **Purpose**: This file contains the RabbitMQConfig class, which is used to configure RabbitMQ for message queuing.
+### Migration Steps from Monolith to Microservices Architecture
 
-##### Functions
-- **exchange**: This function creates a new TopicExchange with the name 'BookStoreExchange'.
-- **newOrdersQueue**: This function creates a new Queue with the name 'new-orders'.
-- **newOrdersQueueBinding**: This function binds the newOrdersQueue to the exchange with the routing key 'orders.new'.
-- **rabbitTemplate**: This function creates a new RabbitTemplate with the provided ConnectionFactory and sets the message converter to a Jackson2JsonMessageConverter.
-- **producerJackson2MessageConverter**: This function creates a new Jackson2JsonMessageConverter with the provided ObjectMapper.
-
-### Migration from Monolith to Microservices
-The migration process from a monolithic architecture to a microservices architecture for the CommonUtilityService involves the following steps:
-
-1. **Identify the Boundaries**: Identify the functionality provided by the CommonUtilityService in the monolithic application.
-2. **Create a Separate Service**: Create a new, separate service for the CommonUtilityService.
-3. **Move the Code**: Move the PagedResult.java and RabbitMQConfig.java files to the new service.
-4. **Update the Dependencies**: Update any dependencies in the new service to ensure they are correctly pointing to the new location of the files.
-5. **Test the Service**: Thoroughly test the new service to ensure it is working correctly.
-6. **Update Other Services**: Update any other services in the system that depend on the CommonUtilityService to use the new service.
+1. **Identify the Service:** Identify the DocumentationService as a separate service in the monolithic architecture.
+2. **Decouple the Service:** Decouple the DocumentationService from the monolithic architecture. This involves separating the codebase and the database.
+3. **Create a New Microservice:** Create a new microservice for the DocumentationService. This includes setting up a new repository, setting up CI/CD, and deploying the service to a separate server.
+4. **Migrate the Code:** Migrate the code for the DocumentationService to the new microservice. This includes the ApiDocsController.java and SwaggerConfig.java files.
+5. **Test the Service:** Test the DocumentationService in isolation to ensure it works correctly.
+6. **Integrate the Service:** Integrate the DocumentationService with the rest of the application. This involves setting up communication between the microservice and the rest of the application.
 
 ### Dependency Hierarchy
+
 ```
-CommonUtilityService
-├── PagedResult.java
-│   ├── PagedResult()
-│   └── of()
-└── RabbitMQConfig.java
-    ├── exchange()
-    ├── newOrdersQueue()
-    ├── newOrdersQueueBinding()
-    ├── rabbitTemplate()
-    └── producerJackson2MessageConverter()
+DocumentationService
+├── ApiDocsController.java
+│   └── getSwaggerApiDocsPage
+└── SwaggerConfig.java
+    ├── contact
+    ├── apiInfo
+    └── docket
 ```
 
-**Note**: None of the functions in the CommonUtilityService call other microservices.
+Note: None of the functions in the DocumentationService call other microservices.
 
 ---
 
-# Inventory Management Service
+# CoreService Microservice Migration Report
 
 ## Overview
-The Inventory Management Service is a microservice that is responsible for managing the inventory of a business. It provides functionalities such as getting and setting the inventory details, managing the stock levels, and handling order events.
+
+The CoreService microservice is a crucial component of the application, providing a set of base functionalities that are used across the system. This microservice is composed of several Java files, each serving a specific purpose and containing a set of functions.
 
 ## Migration from Monolith to Microservices
-To migrate the Inventory Management Service from a monolithic architecture to a microservices architecture, follow these steps:
 
-1. **Identify the Service Boundaries:** The first step is to identify the service boundaries. In this case, the service boundary is the inventory management functionality.
+The migration process from a monolithic architecture to a microservices architecture involves several steps:
 
-2. **Decouple the Service:** Decouple the Inventory Management Service from the monolithic application. This involves separating the code, the database, and any other dependencies.
+1. **Identify the CoreService functionalities**: Start by understanding the functionalities provided by the CoreService in the monolithic application. This will guide the design and development of the microservice.
 
-3. **Create a Separate Repository:** Create a separate repository for the Inventory Management Service. This will allow the service to be developed, deployed, and scaled independently.
+2. **Design the CoreService microservice**: Design the microservice, keeping in mind principles such as single responsibility, loose coupling, and high cohesion.
 
-4. **Implement Communication Mechanisms:** Implement mechanisms for the Inventory Management Service to communicate with other services. This could be through REST APIs, message queues, or any other communication protocol.
+3. **Develop the CoreService microservice**: Implement the microservice based on the design. This involves creating the necessary files and functions.
 
-5. **Test:** Thoroughly test the Inventory Management Service to ensure that it works correctly in isolation and when communicating with other services.
+4. **Test the CoreService microservice**: Conduct thorough testing to ensure that the microservice works as expected.
 
-6. **Deploy:** Deploy the Inventory Management Service independently from the rest of the application.
+5. **Deploy the CoreService microservice**: Once testing is complete, deploy the microservice.
 
-7. **Monitor:** Monitor the service to ensure that it is performing as expected and to quickly identify and fix any issues.
+6. **Update the monolithic application**: Update the monolithic application to use the CoreService microservice instead of the original code.
+
+7. **Repeat for other functionalities**: Repeat the process for other functionalities until the entire monolithic application has been migrated to a microservices architecture.
+
+## File Structure and Purpose
+
+Below is a list of files in the CoreService microservice, their paths, and their purposes:
+
+- `BaseRepository.java` (`core/BaseRepository.java`): This file does not contain any functions and serves as a base repository.
+
+- `Application.java` (`core/main/Application.java`): This file contains the main method which is the entry point of the application.
+
+- `BaseService.java` (`core/service/BaseService.java`): This file contains several functions for basic CRUD operations.
+
+- `BaseEntity.java` (`core/domain/BaseEntity.java`): This file contains functions for getting and setting entity properties.
+
+- `JacksonConstant.java` (`core/helper/constant/JacksonConstant.java`): This file contains a function that prevents the user from initializing an instance.
+
+- `MapperConfig.java` (`core/config/MapperConfig.java`): This file contains a function that creates and returns a new instance of ModelMapper.
+
+- `MySQLConstant.java` (`core/helper/constant/MySQLConstant.java`): This file does not contain any functions and serves to hold MySQL constants.
+
+- `ListParameterizedType.java` (`core/helper/util/ListParameterizedType.java`): This file contains functions related to parameterized types.
+
+- `ModelMapperUtils.java` (`core/util/ModelMapperUtils.java`): This file contains utility functions for mapping between models.
+
+- `SwaggerConstant.java` (`core/helper/constant/SwaggerConstant.java`): This file contains a function that prevents the user from initializing an instance.
+
+- `HotelController.java` (`core/api/HotelController.java`): This file contains functions related to the hotel controller, including one function that calls the DocumentationService microservice.
+
+## Function Calls to Other Microservices
+
+The `sampleSwagger` function in the `HotelController.java` file calls the `DocumentationService` microservice.
+
+## Dependency Hierarchy
+
+The dependency hierarchy of the CoreService microservice is as follows:
+
+```
+CoreService
+├── BaseRepository.java
+├── Application.java
+├── BaseService.java
+├── BaseEntity.java
+├── JacksonConstant.java
+├── MapperConfig.java
+├── MySQLConstant.java
+├── ListParameterizedType.java
+├── ModelMapperUtils.java
+├── SwaggerConstant.java
+└── HotelController.java
+    └── DocumentationService (external microservice)
+```
+
+This hierarchy shows that the `HotelController.java` file in the CoreService microservice depends on the external `DocumentationService` microservice.
+
+---
+
+# InfrastructureService Microservice
+
+## Overview
+The InfrastructureService is a microservice that provides various functionalities related to the application's infrastructure. It includes functionalities such as logging, handling Cross-Origin requests, and managing success details of the application.
 
 ## Files and Functions
 
-### InventoryEntity.java
-**File Path:** inventory/domain/InventoryEntity.java
+### 1. LogInterceptor.java
+**File Path:** infrastructure/web/config/LogInterceptor.java
 
-This file defines the InventoryEntity class, which represents an inventory item in the system. It contains the following functions:
+This file contains functions that are executed at various stages of a request lifecycle. The functions include:
 
-- `getId`: This function returns the id of the inventory entity.
-- `setId`: This function sets the id of the inventory entity.
-- `getProductCode`: This function returns the product code of the inventory entity.
-- `setProductCode`: This function sets the product code of the inventory entity.
-- `getQuantity`: This function returns the quantity of the inventory entity.
-- `setQuantity`: This function sets the quantity of the inventory entity.
+- `afterCompletion`: This function is executed after the request has been completed. It prints 'Request Completed!' to the console.
+- `postHandle`: This function is executed after the handler execution but before the view rendering. It prints 'Method executed' to the console.
+- `preHandle`: This function is executed before the actual handler is executed. It prints 'Before process request' to the console and returns true.
 
-### InventoryRepository.java
-**File Path:** inventory/domain/InventoryRepository.java
+### 2. SimpleCorsFilter.java
+**File Path:** infrastructure/web/config/SimpleCorsFilter.java
 
-This file defines the InventoryRepository class, which is used to interact with the database. It contains the following function:
+This file contains a function that intercepts all inbound HTTP requests and handles Cross-Origin requests. The function is:
 
-- `findByProductCode`: A function that finds an InventoryEntity by its product code. It returns an Optional that contains the InventoryEntity if it exists, or is empty if it does not.
+- `doFilter`: This function intercepts all inbound HTTP requests and sets several Headers on the HTTP response which inform a browser that the web services handle Cross-Origin requests.
 
-### InventoryService.java
-**File Path:** inventory/service/InventoryService.java
+### 3. SuccessDetail.java
+**File Path:** infrastructure/response/SuccessDetail.java
 
-This file defines the InventoryService class, which contains business logic related to inventory management. It contains the following functions:
+This file contains functions that manage the success details of the application. The functions include:
 
-- `InventoryService`: Constructor for the InventoryService class. It initializes the inventoryRepository object.
-- `decreaseStockLevel`: Decreases the stock level for a product by a specified quantity. If the product code is invalid, a warning is logged.
-- `getStockLevel`: Returns the current stock level for a product. If the product code is invalid, it returns 0.
+- `SuccessDetail`: Construct an ExceptionDetail.
+- `getTimestamp`: Returns the timestamp attribute value.
+- `setTimestamp`: Sets the timestamp attribute value.
+- `getMethod`: Returns the method attribute value.
+- `setMethod`: Sets the method attribute value.
+- `getPath`: Returns the path attribute value.
+- `setPath`: Sets the path attribute value.
+- `getStatus`: Returns the status attribute value.
+- `setStatus`: Sets the status attribute value.
+- `getStatusText`: Returns the statusText attribute value.
+- `setStatusText`: Sets the statusText attribute value.
+- `getData`: Returns the data value.
+- `setData`: Sets the data value.
 
-### OrderEventInventoryHandler.java
-**File Path:** inventory/domain/OrderEventInventoryHandler.java
+### 4. WebConfig.java
+**File Path:** infrastructure/config/WebConfig.java
 
-This file defines the OrderEventInventoryHandler class, which handles events related to orders. It contains the following functions:
+This file contains a function that adds the logInterceptor to the InterceptorRegistry. The function is:
 
-- `OrderEventInventoryHandler`: Constructor for the OrderEventInventoryHandler class. It initializes the InventoryService instance.
-- `handle`: This function handles the event when an order is created. It logs the event and decreases the stock level of the product. This function calls the OrderManagementService microservice.
+- `addInterceptors`: This function is an override from the WebMvcConfigurerAdapter class. It adds the logInterceptor to the InterceptorRegistry.
 
----
+### 5. SuccessDetailBuilder.java
+**File Path:** infrastructure/response/SuccessDetailBuilder.java
 
-# Microservice Migration Report
+This file contains functions that build the SuccessDetail object. The functions include:
 
-## Microservice Name: ProductManagementService
+- `SuccessDetailBuilder`: Constructs a new SuccessDetailBuilder.
+- `build`: Invoke this method to obtain the SuccessDetail object after using builder methods to populate it.
+- `data`: Populate the SuccessDetail attributes with information. Returns this SuccessDetailBuilder to chain method invocations.
+- `httpStatus`: Populate the SuccessDetail attributes with information from a HttpStatus. Returns this SuccessDetailBuilder to chain method invocations.
+- `webRequest`: Populate the SuccessDetail attributes with information from a WebRequest. Typically use either a WebRequest or HttpServletRequest, but not both. Returns this SuccessDetailBuilder to chain method invocations.
+- `httpServletRequest`: Populate the SuccessDetail attributes with information from a HttpServletRequest. Typically use either a WebRequest or HttpServletRequest, but not both. Returns this SuccessDetailBuilder to chain method invocations.
 
-This microservice is responsible for managing all product-related operations. It includes functionalities such as fetching product details, handling product exceptions, and managing product data.
+## Migration from Monolith to Microservices
+Migrating from a monolithic architecture to a microservices architecture involves several steps. Here is a step-by-step guide on how to migrate the InfrastructureService microservice:
 
-### Migration from Monolith to Microservices
+1. **Identify the Functionalities:** Identify the functionalities provided by the InfrastructureService in the monolithic application. This includes logging, handling Cross-Origin requests, and managing success details.
 
-The migration process from a monolithic architecture to a microservice architecture involves several steps. Here's a step-by-step guide:
+2. **Design the Microservice:** Design the InfrastructureService microservice to provide these functionalities. This includes defining the APIs and the data model.
 
-1. **Identify the Boundaries**: The first step is to identify the boundaries of the microservice. In this case, the ProductManagementService is responsible for all operations related to product management.
+3. **Implement the Microservice:** Implement the InfrastructureService microservice. This includes writing the code for the APIs and the data model.
 
-2. **Decouple the Database**: Separate the database of the ProductManagementService from the monolithic database.
+4. **Test the Microservice:** Test the InfrastructureService microservice to ensure that it provides the expected functionalities.
 
-3. **Create the Microservice**: Create the ProductManagementService with its own codebase, database, and infrastructure.
+5. **Deploy the Microservice:** Deploy the InfrastructureService microservice on a separate server or container.
 
-4. **Implement the Business Logic**: Implement the business logic in the microservice. This includes all the functions present in the ProductManagementService.
+6. **Update the Monolithic Application:** Update the monolithic application to use the APIs provided by the InfrastructureService microservice instead of the functionalities provided by the monolithic application.
 
-5. **Test the Microservice**: Thoroughly test the microservice to ensure it works as expected.
+7. **Test the Monolithic Application:** Test the monolithic application to ensure that it works correctly with the InfrastructureService microservice.
 
-6. **Deploy the Microservice**: Deploy the microservice and ensure it can communicate with other microservices.
+8. **Repeat the Process:** Repeat the process for other functionalities in the monolithic application.
 
-7. **Monitor the Microservice**: Monitor the microservice to ensure it operates as expected.
+Here is a simple text-based flowchart of the process:
 
-### List of Files
+```
+Monolithic Application
+  |
+  v
+Identify Functionalities -> Design Microservice -> Implement Microservice -> Test Microservice -> Deploy Microservice
+  |
+  v
+Update Monolithic Application -> Test Monolithic Application
+  |
+  v
+Repeat for Other Functionalities
+```
 
-#### File: ProductDto.java
-- **Path**: product/domain/ProductDto.java
-- **Purpose**: This file is used to transfer data of Product.
-- **Functions**:
-  - `getDisplayName`: This function returns the product name if its length is less than or equal to 20. If the product name is longer than 20 characters, it returns the first 20 characters followed by '...'.
-
-#### File: ProductNotFoundException.java
-- **Path**: product/domain/ProductNotFoundException.java
-- **Purpose**: This file defines an exception that is thrown when a product is not found.
-- **Functions**:
-  - `ProductNotFoundException`: This is a constructor that takes a string message as an argument and passes it to the superclass constructor.
-  - `forCode`: This is a static method that takes a string code as an argument, creates a new ProductNotFoundException with a custom message, and returns it.
-
-#### File: ProductWebController.java
-- **Path**: productmanagement/web/ProductWebController.java
-- **Purpose**: This file is used to handle web requests related to products.
-
-#### File: ProductEntity.java
-- **Path**: product/domain/ProductEntity.java
-- **Purpose**: This file represents the product entity in the database.
-- **Functions**:
-  - `getId`: This function returns the id of the product.
-  - `setId`: This function sets the id of the product.
-  - `getCode`: This function returns the code of the product.
-  - `setCode`: This function sets the code of the product.
-  - `getName`: This function returns the name of the product.
-  - `setName`: This function sets the name of the product.
-  - `getDescription`: This function returns the description of the product.
-  - `setDescription`: This function sets the description of the product.
-  - `getImageUrl`: This function returns the image URL of the product.
-  - `setImageUrl`: This function sets the image URL of the product.
-  - `getPrice`: This function returns the price of the product.
-  - `setPrice`: This function sets the price of the product.
-
-#### File: ProductMapper.java
-- **Path**: product/domain/mappers/ProductMapper.java
-- **Purpose**: This file is used to map ProductEntity to ProductDto.
-- **Functions**:
-  - `mapToDto`: This function takes a ProductEntity object as input and returns a new ProductDto object, using the attributes of the input object to initialize the new object.
-
-#### File: ProductRepository.java
-- **Path**: product/domain/ProductRepository.java
-- **Purpose**: This file is used to interact with the database for product-related operations.
-- **Functions**:
-  - `findByCode`: A function that returns an Optional of ProductEntity by searching for a given code.
-
-#### File: CatalogExceptionHandler.java
-- **Path**: product_management/web/CatalogExceptionHandler.java
-- **Purpose**: This file is used to handle exceptions related to the product catalog.
-- **Functions**:
-  - `handle`: This function handles the ProductNotFoundException. It creates a ProblemDetail object with the status NOT_FOUND and the exception message. It then sets the title of the problem detail to 'Product Not Found' and adds a timestamp property with the current instant. Finally, it returns the problem detail.
-
-#### File: ProductService.java
-- **Path**: product/domain/ProductService.java
-- **Purpose**: This file is used to handle business logic related to products.
-- **Functions**:
-  - `ProductService`: Constructor for ProductService. It initializes the ProductRepository instance.
-  - `getProducts`: This function retrieves a page of products sorted by name in ascending order. The page size is defined by the constant PRODUCT_PAGE_SIZE.
-  - `getByCode`: This function retrieves a product by its code.
-
-#### File: ProductApi.java
-- **Path**: product_management_service/src/main/java/com/sivalabs/bookstore/catalog/ProductApi.java
-- **Purpose**: This file is used to expose product-related APIs.
-- **Functions**:
-  - `ProductApi`: Constructor for the ProductApi class. It initializes the ProductService and ProductMapper objects.
-  - `getByCode`: This function retrieves a product by its code. It uses the ProductService to get the product and the ProductMapper to convert it to a DTO.
-
-#### File: ProductRestController.java
-- **Path**: product_management/web/ProductRestController.java
-- **Purpose**: This file is used to handle REST requests related to products.
-- **Functions**:
-  - `ProductRestController`: Constructor for the ProductRestController class. It initializes productService and productMapper.
-  - `getProducts`: Fetches a page of products. It uses the productService to get the products and the productMapper to map the products to DTOs.
-  - `getProductByCode`: Fetches a product by its code. It uses the productService to get the product and the productMapper to map the product to a DTO. If the product is not found, it throws a ProductNotFoundException.
-
-### Microservice Interaction
-
-Based on the provided JSON data, there are no functions that call other microservices.
+Please note that no function in the InfrastructureService microservice calls another microservice.
 
 ---
 
 # Microservice Migration Report
 
-## Microservice Name: OrderManagementService
+## Microservice Name: BaseDtoService
 
-The OrderManagementService is a microservice responsible for managing orders in the system. It contains various files and functions that handle different aspects of order management, such as creating orders, updating orders, handling exceptions, and interacting with other microservices.
+### Overview
+The BaseDtoService is a microservice that is part of a larger application. It is responsible for managing the Data Transfer Objects (DTOs) that are used for data transmission between processes. The main file in this microservice is `BaseDto.java`.
 
-### Migration from Monolith to Microservices
+### File Details
 
-The migration from a monolithic architecture to a microservices architecture involves breaking down the monolith into smaller, independent services. In the case of the OrderManagementService, the process would involve the following steps:
+#### File: BaseDto.java
+- **File Path:** dto/domain/BaseDto.java
+- **Purpose:** This file is the base class for all DTOs in the system. It does not contain any specific functions.
 
-1. **Identify the Boundaries:** Identify the functionalities that will be part of the OrderManagementService. These would typically include order creation, order retrieval, order update, and order deletion.
+### Migrating from Monolith to Microservices
 
-2. **Create the Microservice:** Create a new microservice project for the OrderManagementService. This would involve setting up a new code repository, setting up the development environment, and setting up the deployment pipeline.
+The migration from a monolithic architecture to a microservices architecture involves breaking down a large, complex system into smaller, independent services. Here is a step-by-step guide on how to migrate the BaseDtoService:
 
-3. **Migrate the Code:** Migrate the relevant code from the monolith to the new microservice. This would involve copying the relevant files and functions, and then refactoring the code to ensure that it works in the new microservice.
+1. **Identify the Boundaries:** The first step in migrating to a microservices architecture is to identify the boundaries of the BaseDtoService. This involves understanding the responsibilities of the service and how it interacts with other parts of the system.
 
-4. **Test the Microservice:** Test the new microservice to ensure that it works correctly. This would involve unit testing, integration testing, and end-to-end testing.
+2. **Create a Separate Service:** Once the boundaries are identified, create a separate service for the BaseDtoService. This involves creating a new project or repository and moving the `BaseDto.java` file to this new service.
 
-5. **Deploy the Microservice:** Deploy the new microservice to a staging environment and perform further testing. Once the testing is successful, deploy the microservice to the production environment.
+3. **Update Dependencies:** Update any dependencies that the BaseDtoService has on other parts of the system. This could involve updating the import statements in the `BaseDto.java` file.
 
-6. **Decommission the Monolith Code:** Once the new microservice is working correctly, the corresponding code in the monolith can be decommissioned.
+4. **Test the Service:** After the service has been separated and the dependencies have been updated, test the service to ensure that it is functioning correctly.
 
-### List of Files
+5. **Deploy the Service:** Once the service has been tested and verified, it can be deployed. This involves setting up a server or container to host the service and configuring any necessary networking.
 
-Below is a list of files in the OrderManagementService, along with their file paths, purposes, and the functions they contain.
+6. **Update Other Services:** After the BaseDtoService has been deployed, update any other services that depend on it. This could involve updating the URLs or endpoints that these services use to communicate with the BaseDtoService.
 
-#### File: Customer.java
-- **File Path:** orders/domain/models/Customer.java
-- **Purpose:** This file represents the Customer model in the domain. It does not contain any functions.
+Please note that this microservice does not call any other microservice.
 
-#### File: CreateOrderResponse.java
-- **File Path:** orders/domain/CreateOrderResponse.java
-- **Purpose:** This file represents the response sent after an order is created. It does not contain any functions.
+### Functions
 
-#### File: OrderForm.java
-- **File Path:** orders/web/OrderForm.java
-- **Purpose:** This file represents the form used for creating orders. It does not contain any functions.
+The `BaseDto.java` file does not contain any functions.
 
-#### File: InvalidOrderException.java
-- **File Path:** orders/exceptions/InvalidOrderException.java
-- **Purpose:** This file represents an exception that is thrown when an invalid order is created.
-- **Functions:**
-  - **InvalidOrderException:** Constructor function that takes a string message as an argument and passes it to the superclass constructor.
+### Dependencies
 
-#### File: OrderItem.java
-- **File Path:** orders/domain/models/OrderItem.java
-- **Purpose:** This file represents the OrderItem model in the domain. It does not contain any functions.
+The `BaseDto.java` file does not have any dependencies on other files or services.
 
-#### File: OrderStatus.java
-- **File Path:** orders/domain/models/OrderStatus.java
-- **Purpose:** This file represents the OrderStatus model in the domain. It does not contain any functions.
+### Flowchart
 
-#### File: OrderWebController.java
-- **File Path:** orders/web/OrderWebController.java
-- **Purpose:** This file represents the web controller for orders. It does not contain any functions.
+Since the `BaseDto.java` file does not contain any functions or dependencies, a flowchart is not applicable in this case.
 
-#### File: CartController.java
-- **File Path:** orders/web/CartController.java
-- **Purpose:** This file represents the web controller for the shopping cart.
-- **Functions:**
-  - **CartController:** Constructor for CartController class. It initializes the ProductApi object. Calls the ProductManagementService.
-  - **addProductToCart:** This function adds a product to the cart. It takes a product code and a session as parameters. Calls the ProductManagementService.
-  - **showCart:** This function displays the cart. It takes a model and a session as parameters.
-  - **updateCart:** This function updates the cart. It takes a product code, quantity, and a session as parameters.
+---
 
-#### File: OrderNotFoundException.java
-- **File Path:** orders/exceptions/OrderNotFoundException.java
-- **Purpose:** This file represents an exception that is thrown when an order is not found.
-- **Functions:**
-  - **OrderNotFoundException:** A constructor that takes a message string as an argument and passes it to the superclass constructor.
-  - **forOrderNumber:** A static method that takes an order number string as an argument and returns a new instance of OrderNotFoundException with a custom message.
+# Microservice Migration Report: UserService
 
-#### File: Cart.java
-- **File Path:** orders/domain/Cart.java
-- **Purpose:** This file represents the Cart model in the domain.
-- **Functions:**
-  - **getItem:** Returns the LineItem object stored in the 'item' field.
-  - **setItem:** Sets the LineItem object to the 'item' field.
-  - **getTotalAmount:** Returns the total amount of the LineItem by multiplying its price and quantity. If the item is null, it returns zero.
-  - **removeItem:** Sets the 'item' field to null.
-  - **updateItemQuantity:** Updates the quantity of the LineItem. If the quantity is less than or equal to zero, it removes the item.
-  - **LineItem:** An inner class representing a line item with fields for code, name, price, and quantity. It includes getters and setters for these fields.
+## Overview
+The UserService is a microservice that handles all operations related to users. It includes functionalities such as creating, updating, deleting, and retrieving user data. This microservice is composed of several Java files, each with its own specific purpose and functionality.
 
-#### File: OrderCreatedEvent.java
-- **File Path:** orders/domain/models/OrderCreatedEvent.java
-- **Purpose:** This file represents the event that is published when an order is created. It does not contain any functions.
+## Migrating from Monolith to Microservices
+The migration process from a monolithic architecture to a microservices architecture for the UserService involves several steps:
 
-#### File: CreateOrderRequest.java
-- **File Path:** orders/domain/CreateOrderRequest.java
-- **Purpose:** This file represents the request sent to create an order. It does not contain any functions.
+1. **Identify the UserService functionality in the monolithic application**: This involves understanding all the operations related to users that are currently being handled by the monolithic application.
 
-#### File: CartUtil.java
-- **File Path:** orders/web/CartUtil.java
-- **Purpose:** This file contains utility functions related to the shopping cart.
-- **Functions:**
-  - **getCart:** This function retrieves the cart object from the session. If the cart object is null, it creates a new cart object.
-  - **CartUtil:** This is a private constructor to prevent instantiation of the utility class.
+2. **Design the UserService microservice**: This includes defining the APIs that the UserService will expose and the data it will handle.
 
-#### File: OrderView.java
-- **File Path:** orders/domain/OrderView.java
-- **Purpose:** This file represents the view model for orders. It does not contain any functions.
+3. **Implement the UserService microservice**: This involves creating the UserService microservice using the identified functionalities and designed APIs.
 
-#### File: OrderDto.java
-- **File Path:** orders/domain/OrderDto.java
-- **Purpose:** This file represents the data transfer object for orders.
-- **Functions:**
-  - **getTotalAmount:** This function returns the total amount of the order by multiplying the price of the item by its quantity. It uses the BigDecimal class for the multiplication and to hold the return value.
+4. **Test the UserService microservice**: This involves testing the UserService microservice independently to ensure it works as expected.
 
-#### File: OrdersExceptionHandler.java
-- **File Path:** order_management/web/OrdersExceptionHandler.java
-- **Purpose:** This file handles exceptions related to orders.
-- **Functions:**
-  - **handle:** This function handles the OrderNotFoundException. It creates a ProblemDetail object with the status NOT_FOUND and the exception message, sets the title to 'Order Not Found', sets the timestamp to the current time, and returns the ProblemDetail object.
-  - **handle:** This function handles the InvalidOrderException. It creates a ProblemDetail object with the status BAD_REQUEST and the exception message, sets the title to 'Invalid Order Creation Request', sets the timestamp to the current time, and returns the ProblemDetail object.
+5. **Integrate the UserService microservice**: This involves integrating the UserService microservice with the rest of the application and ensuring it communicates correctly with other microservices.
 
-#### File: OrderEventNotificationHandler.java
-- **File Path:** ordermanagement/domain/OrderEventNotificationHandler.java
-- **Purpose:** This file handles the event when an order is created.
-- **Functions:**
-  - **handle:** This function handles the event when an order is created. It logs the information about the event.
+6. **Deploy the UserService microservice**: This involves deploying the UserService microservice to the production environment.
 
-#### File: OrderRepository.java
-- **File Path:** ordermanagement/domain/OrderRepository.java
-- **Purpose:** This file represents the repository for orders.
-- **Functions:**
-  - **findAllBy:** This function returns a list of all OrderEntity objects, sorted according to the provided Sort object. It uses a custom query to fetch the data, which includes fetching associated order items for each order.
-  - **findByOrderNumber:** This function returns an Optional containing the OrderEntity object that matches the provided order number. If no such order exists, the returned Optional is empty. It uses a custom query to fetch the data, which includes fetching associated order items for the order.
+7. **Monitor the UserService microservice**: This involves monitoring the UserService microservice to ensure it is working as expected and to identify any issues that may arise.
 
-#### File: OrderService.java
-- **File Path:** orders/domain/OrderService.java
-- **Purpose:** This file represents the service for orders.
-- **Functions:**
-  - **OrderService:** Constructor for the OrderService class. It initializes the OrderRepository and ApplicationEventPublisher instances.
-  - **createOrder:** This function creates an order, logs the creation, publishes an event, and returns the saved order.
-  - **findOrder:** This function finds and returns an order by its order number.
-  - **findOrders:** This function finds and returns all orders sorted by id in descending order.
+## Files and Functions
+Below is a list of the files in the UserService microservice, their purposes, and the functions they contain.
 
-#### File: OrderMapper.java
-- **File Path:** orders/mappers/OrderMapper.java
-- **Purpose:** This file contains functions to map between different order models.
-- **Functions:**
-  - **convertToEntity:** Converts a CreateOrderRequest object into an OrderEntity object. It sets the order number, status, customer, delivery address, and order item from the request.
-  - **convertToDto:** Converts an OrderEntity object into an OrderDto object. It sets the order number, order item, customer, delivery address, status, and creation time from the order entity.
-  - **convertToOrderViews:** Converts a list of OrderEntity objects into a list of OrderView objects. It sets the order number, status, and customer for each order view from the corresponding order entity.
+### UserDto.java
+- **File Path**: `user/dto/UserDto.java`
+- **Purpose**: This file is used to transfer data about a user between processes or across network connections.
 
-#### File: OrdersApi.java
-- **File Path:** ordermanagement/api/OrdersApi.java
-- **Purpose:** This file represents the API for orders.
-- **Functions:**
-  - **OrdersApi:** Constructor for OrdersApi class. It initializes the OrderService.
-  - **createOrder:** This function creates a new order. It converts the request to an OrderEntity, creates the order using the OrderService, and returns a CreateOrderResponse with the order number.
-  - **findOrder:** This function finds an order by its order number. It uses the OrderService to find the order, converts the OrderEntity to an OrderDto, and returns it wrapped in an Optional.
-  - **findOrders:** This function finds all orders. It uses the OrderService to find the orders, converts the list of OrderEntity to a list of OrderView, and returns it.
+### UserRepositoryCustom.java
+- **File Path**: `user/domain/UserRepositoryCustom.java`
+- **Purpose**: This file is used to define custom methods for interacting with the user data in the database.
 
-#### File: OrderWebSupport.java
-- **File Path:** orders/web/OrderWebSupport.java
-- **Purpose:** This file provides support functions for the web layer of the order management.
-- **Functions:**
-  - **OrderWebSupport:** Constructor for the OrderWebSupport class. It initializes the ProductApi instance. Calls the ProductManagementService.
-  - **validate:** This function validates the CreateOrderRequest. It checks if the product code exists and if the price matches the product's price. If not, it throws an InvalidOrderException. Calls the ProductManagementService.
+### UserSeeder.java
+- **File Path**: `user/seeding/UserSeeder.java`
+- **Purpose**: This file is used to populate the database with initial user data.
+- **Functions**:
+  - `run`: This function creates two User objects, adds them to a list, and saves them in the UserRepository.
 
-#### File: OrderRestController.java
-- **File Path:** orders/web/OrderRestController.java
-- **Purpose:** This file represents the REST controller for orders.
-- **Functions:**
-  - **OrderRestController:** Constructor for the OrderRestController class. It initializes the OrderService and ProductApi instances. Calls the ProductManagementService.
-  - **createOrder:** This function validates the request, converts it to an OrderEntity, creates an order using the OrderService, and returns a CreateOrderResponse with the order number.
-  - **getOrder:** This function fetches an order by its order number. If the order is not found, it throws an OrderNotFoundException.
-  - **getOrders:** This function fetches all orders and converts them to OrderView objects.
+### UserController.java
+- **File Path**: `user/api/UserController.java`
+- **Purpose**: This file is used to handle HTTP requests related to users.
+- **Functions**:
+  - `findAll`: Returns a paginated list of UserDto objects.
+  - `findAll`: Returns a list of all UserDto objects.
+  - `findById`: Returns a UserDto object by its id.
+  - `create`: Creates a new UserDto object and returns its id. Calls the `ExceptionService` microservice.
+  - `update`: Updates a UserDto object by its id. Calls the `ExceptionService` microservice.
+  - `deleteById`: Deletes a UserDto object by its id.
 
-#### File: OrderEntity.java
-- **File Path:** orders/domain/OrderEntity.java
-- **Purpose:** This file represents the entity for orders.
-- **Functions:**
-  - **OrderEntity:** Default constructor for OrderEntity class.
-  - **OrderEntity:** Overloaded constructor for OrderEntity class.
-  - **getId:** Getter method for id.
-  - **setId:** Setter method for id.
-  - **getOrderNumber:** Getter method for orderNumber.
-  - **setOrderNumber:** Setter method for orderNumber.
-  - **getCustomer:** Getter method for customer.
-  - **setCustomer:** Setter method for customer.
-  - **getDeliveryAddress:** Getter method for deliveryAddress.
-  - **setDeliveryAddress:** Setter method for deliveryAddress.
-  - **getOrderItem:** Getter method for orderItem.
-  - **setOrderItem:** Setter method for orderItem.
-  - **getStatus:** Getter method for status.
-  - **setStatus:** Setter method for status.
-  - **getCreatedAt:** Getter method for createdAt.
-  - **setCreatedAt:** Setter method for createdAt.
-  - **getUpdatedAt:** Getter method for updatedAt.
-  - **setUpdatedAt:** Setter method for updatedAt.
+### UserService.java
+- **File Path**: `user/service/UserService.java`
+- **Purpose**: This file defines the interface for the user service.
 
-### Dependency Hierarchy
+### UserRepositoryImpl.java
+- **File Path**: `user/repository/impl/UserRepositoryImpl.java`
+- **Purpose**: This file provides an implementation of the UserRepositoryCustom interface.
 
-The OrderManagementService has dependencies on other microservices. Here is a simple text-based dependency hierarchy:
+### User.java
+- **File Path**: `user/domain/User.java`
+- **Purpose**: This file defines the User entity.
 
-- OrderManagementService
-  - ProductManagementService (called by CartController, OrderWebSupport, and OrderRestController)
+### Customer.java
+- **File Path**: `user/domain/Customer.java`
+- **Purpose**: This file defines the Customer entity, which is a type of user.
+- **Functions**:
+  - `Customer`: This is a default constructor for the Customer class.
 
-### Conclusion
+### UserValidationImpl.java
+- **File Path**: `user/validation/impl/UserValidationImpl.java`
+- **Purpose**: This file provides an implementation of the UserValidation interface.
+- **Functions**:
+  - `isValidateUserId`: This function validates if a user with the given id exists in the UserRepository. If not, it adds an ExceptionDetailMessage to a list and returns it.
 
-The OrderManagementService is a complex microservice with many files and functions. The migration from a monolithic architecture to a microservices architecture would involve careful planning and execution to ensure that all functionalities are correctly migrated and that the new microservice works correctly.
+### UserServiceImpl.java
+- **File Path**: `user/service/impl/UserServiceImpl.java`
+- **Purpose**: This file provides an implementation of the UserService interface.
+- **Functions**:
+  - `findAll`: This function retrieves all users in a pageable format. It uses the UserRepository and ModelMapperUtils.
+  - `findAll`: This function retrieves all users. It uses the UserRepository and ModelMapper.
+  - `findById`: This function retrieves a user by id. It uses the UserRepository, UserValidation, and ModelMapper.
+  - `create`: This function creates a new user. It uses the UserRepository and ModelMapper.
+  - `update`: This function updates a user by id. It uses the UserRepository and UserValidation.
+  - `deleteById`: This function deletes a user by id. It uses the UserRepository and UserValidation.
+
+---
+
+# Microservice Migration Report
+
+## Microservice Name: ExceptionService
+
+### Overview
+The ExceptionService is a microservice that handles exceptions in the system. It contains various files and functions that are responsible for creating, handling, and managing exceptions. The service includes custom exceptions, exception handlers, and utility classes for exception management.
+
+---
+
+### Migration from Monolith to Microservices Architecture
+
+The migration process from a monolithic architecture to a microservices architecture involves several steps:
+
+1. **Identify the Boundaries**: Identify the boundaries of the ExceptionService in the monolithic application. This involves understanding the responsibilities of the service and how it interacts with other services.
+
+2. **Decouple the Service**: Decouple the ExceptionService from the monolithic application. This involves removing dependencies and ensuring that the service can function independently.
+
+3. **Create the Microservice**: Create the ExceptionService as a standalone microservice. This involves setting up the necessary infrastructure, such as databases and servers.
+
+4. **Test the Microservice**: Test the ExceptionService to ensure that it functions correctly. This involves unit testing, integration testing, and end-to-end testing.
+
+5. **Deploy the Microservice**: Deploy the ExceptionService to the production environment. This involves setting up CI/CD pipelines and monitoring systems.
+
+6. **Iterate**: Repeat the process for each service in the monolithic application until the entire application has been migrated to a microservices architecture.
+
+---
+
+### Files and Functions
+
+#### File: CustomNotFoundException.java
+- **Path**: exception/domain/CustomNotFoundException.java
+- **Purpose**: This file defines a custom exception that is thrown when a requested resource is not found.
+- **Functions**:
+  - **CustomNotFoundException**: This is a constructor function that takes a string message as an argument and passes it to the superclass constructor.
+
+#### File: DTOInControllerNotValidException.java
+- **Path**: exception/DTOInControllerNotValidException.java
+- **Purpose**: This file defines a custom exception that is thrown when a DTO in a controller is not valid.
+- **Functions**:
+  - **DTOInControllerNotValidException**: Constructor for DTOInControllerNotValidException. It initializes the bindingResult field with the provided argument.
+  - **getBindingResult**: This function returns the results of the failed validation.
+
+#### File: ExceptionUtils.java
+- **Path**: exception/util/ExceptionUtils.java
+- **Purpose**: This file contains utility functions for handling exceptions.
+
+#### File: GlobalControllerExceptionHandler.java
+- **Path**: exception/GlobalControllerExceptionHandler.java
+- **Purpose**: This file defines a global exception handler for controllers.
+
+#### File: DTOInServiceNotValidException.java
+- **Path**: exception/domain/DTOInServiceNotValidException.java
+- **Purpose**: This file defines a custom exception that is thrown when a DTO in a service is not valid.
+- **Functions**:
+  - **DTOInServiceNotValidException**: Constructor for DTOInServiceNotValidException. It initializes the errorMsgs with the results of the validation.
+  - **getErrorMsgs**: This function returns the results of the failed validation.
+
+#### File: ExceptionDetailMessage.java
+- **Path**: exception/response/ExceptionDetailMessage.java
+- **Purpose**: This file defines a class for detailed exception messages.
+- **Functions**:
+  - **ExceptionDetailMessage**: Default constructor for the ExceptionDetailMessage class
+  - **ExceptionDetailMessage**: Overloaded constructor for the ExceptionDetailMessage class that accepts field and message as parameters
+  - **getField**: Getter method for the field property
+  - **setField**: Setter method for the field property
+  - **getMessage**: Getter method for the message property
+  - **setMessage**: Setter method for the message property
+
+#### File: HotelController.java
+- **Path**: exception/api/HotelController.java
+- **Purpose**: This file defines a controller for managing hotels.
+- **Functions**:
+  - **exception**: Throws a custom not found exception
+  - **create**: Creates a new hotel
+  - **update**: Updates a hotel by its id
+
+#### File: ExceptionDetailBuilder.java
+- **Path**: exception/response/ExceptionDetailBuilder.java
+- **Purpose**: This file defines a builder class for creating detailed exception messages.
+- **Functions**:
+  - **ExceptionDetailBuilder**: Constructs a new ExceptionDetailBuilder.
+  - **build**: Invoke this method to obtain the ExceptionDetail object after using builder methods to populate it.
+  - **exception**: Populate the ExceptionDetail attributes with information from the Exception. Returns this ExceptionDetailBuilder to chain method invocations.
+  - **exceptionDetail**: Populate the ExceptionDetail attributes with information from the List<ExceptionDetailMessage>. Returns this ExceptionDetailBuilder to chain method invocations.
+  - **httpStatus**: Populate the ExceptionDetail attributes with information from a HttpStatus. Returns this ExceptionDetailBuilder to chain method invocations.
+  - **webRequest**: Populate the ExceptionDetail attributes with information from a WebRequest. Typically use either a WebRequest or HttpServletRequest, but not both. Returns this ExceptionDetailBuilder to chain method invocations.
+  - **httpServletRequest**: Populate the ExceptionDetail attributes with information from a HttpServletRequest. Typically use either a WebRequest or HttpServletRequest, but not both. Returns this ExceptionDetailBuilder to chain method invocations.
+
+#### File: ExceptionDetail.java
+- **Path**: exception/domain/ExceptionDetail.java
+- **Purpose**: This file defines a class for detailed exception messages.
+- **Functions**:
+  - **ExceptionDetail**: Constructor for the ExceptionDetail class. It sets the timestamp to the current system time in milliseconds.
+  - **getTimestamp**: Returns the timestamp attribute value.
+  - **setTimestamp**: Sets the timestamp attribute value.
+  - **getMethod**: Returns the method attribute value.
+  - **setMethod**: Sets the method attribute value.
+  - **getPath**: Returns the path attribute value.
+  - **setPath**: Sets the path attribute value.
+  - **getStatus**: Returns the status attribute value.
+  - **setStatus**: Sets the status attribute value.
+  - **getStatusText**: Returns the statusText attribute value.
+  - **setStatusText**: Sets the statusText attribute value.
+  - **getExceptionClass**: Returns the exceptionClass attribute value.
+  - **setExceptionClass**: Sets the exceptionClass attribute value.
+  - **getExceptionMessage**: Returns the exceptionMessage attribute value.
+  - **setExceptionMessage**: Sets the exceptionMessage attribute value.
+  - **getExceptionMessageDetail**: Returns the exceptionMessageDetail attribute value.
+  - **setExceptionMessageDetail**: Sets the exceptionMessageDetail attribute value.
+
+---
+
+Note: None of the functions in the ExceptionService call other microservices.
+
+---
+
+# Microservice Migration Report: HotelService
+
+## Overview
+
+The HotelService microservice is responsible for managing hotel data. It provides functionality for creating, reading, updating, and deleting hotels. It also validates hotel data and handles exceptions.
+
+## Migrating from Monolith to Microservices
+
+1. **Identify the HotelService functionality in the monolith**: The first step is to identify all the functionality related to HotelService in the monolith application. This includes all the functions, classes, and data models.
+
+2. **Create a new microservice project**: Create a new microservice project for HotelService. This will be a separate application with its own codebase.
+
+3. **Move the HotelService code to the new microservice**: Move the identified HotelService code from the monolith to the new microservice. This includes all the functions, classes, and data models related to HotelService.
+
+4. **Refactor the code**: Refactor the code to make it work in the microservice architecture. This includes changing the way the code interacts with the database and other services.
+
+5. **Test the new microservice**: Test the new microservice to make sure it works correctly. This includes unit tests, integration tests, and end-to-end tests.
+
+6. **Deploy the new microservice**: Deploy the new microservice to the production environment. This includes setting up the necessary infrastructure and configuring the service.
+
+7. **Update the monolith to use the new microservice**: Update the monolith to use the new HotelService microservice. This includes changing the code in the monolith to call the new microservice instead of using the old HotelService code.
+
+8. **Test the updated monolith**: Test the updated monolith to make sure it works correctly with the new microservice.
+
+9. **Deploy the updated monolith**: Deploy the updated monolith to the production environment.
+
+10. **Monitor and optimize the new microservice**: Monitor the new microservice to make sure it's performing well. Optimize the service as necessary.
+
+## Files
+
+### HotelDto.java
+
+- **File Path**: hotel/dto/HotelDto.java
+- **Purpose**: This file is used to transfer data of Hotel object. It does not contain any functions.
+
+### HotelRestController.java
+
+- **File Path**: hotel/controller/HotelRestController.java
+- **Purpose**: This file is responsible for handling RESTful HTTP requests related to Hotel. It does not contain any functions.
+
+### HotelValidationImpl.java
+
+- **File Path**: service/validation/impl/HotelValidationImpl.java
+- **Purpose**: This file is responsible for validating hotel data.
+- **Functions**:
+  - `isValidateHotelId`: This function checks if a hotel with the given id exists in the repository. If it does not exist, it adds a new ExceptionDetailMessage to a list and returns this list. It calls the `ExceptionDetailMessage` function from the `ExceptionService` microservice.
+
+### HotelController.java
+
+- **File Path**: hotel/api/HotelController.java
+- **Purpose**: This file is responsible for handling HTTP requests related to Hotel.
+- **Functions**:
+  - `findAll`: Returns a paginated list of all hotels.
+  - `findAll`: Returns a list of all hotels.
+  - `findById`: Returns a hotel by its id.
+  - `create`: Creates a new hotel.
+  - `update`: Updates a hotel by its id.
+  - `deleteById`: Deletes a hotel by its id.
+  - `postPublicView`: Returns a hotel DTO with public view.
+  - `postInternalView`: Returns a hotel DTO with internal view.
+
+### HotelService.java
+
+- **File Path**: hotel/service/HotelService.java
+- **Purpose**: This file is responsible for providing services related to Hotel. It does not contain any functions.
+
+### HotelValidation.java
+
+- **File Path**: hotel/validation/HotelValidation.java
+- **Purpose**: This file is responsible for providing validation services for Hotel.
+- **Functions**:
+  - `isValidateHotelId`: Check exist a hotel.
+
+### HotelRepositoryCustom.java
+
+- **File Path**: hotel/repository/HotelRepositoryCustom.java
+- **Purpose**: This file is responsible for providing custom repository services for Hotel.
+- **Functions**:
+  - `someCustomMethod`: Do something.
+  - `allHotels`: Returns list all Hotels.
+
+### HotelRepository.java
+
+- **File Path**: hotel/repository/HotelRepository.java
+- **Purpose**: This file is responsible for providing repository services for Hotel. It does not contain any functions.
+
+### Hotel.java
+
+- **File Path**: hotel/domain/Hotel.java
+- **Purpose**: This file is responsible for defining the Hotel domain model.
+- **Functions**:
+  - `getName`: Getter function for 'name' property.
+  - `setName`: Setter function for 'name' property.
+  - `getClassification`: Getter function for 'classification' property.
+  - `setClassification`: Setter function for 'classification' property.
+  - `isOpen`: Getter function for 'open' property.
+  - `setOpen`: Setter function for 'open' property.
+
+### HotelRepositoryImpl.java
+
+- **File Path**: hotel/repository/impl/HotelRepositoryImpl.java
+- **Purpose**: This file is responsible for providing implementation of custom repository services for Hotel.
+- **Functions**:
+  - `someCustomMethod`: This is a custom method that takes a Hotel object as an argument. The implementation is not provided in this code snippet.
+  - `allHotels`: This method returns a list of all Hotel objects. It uses the EntityManager to create a CriteriaBuilder, which is then used to create a CriteriaQuery. The query is executed and the results are returned.
+
+### HotelSeeder.java
+
+- **File Path**: hotel/seeding/HotelSeeder.java
+- **Purpose**: This file is responsible for seeding the database with initial Hotel data.
+- **Functions**:
+  - `run`: This function is an override of the run method from the CommandLineRunner interface. It creates three Hotel objects, adds them to a list, and saves them to the hotelRepository.
+
+### HotelServiceImpl.java
+
+- **File Path**: service/impl/HotelServiceImpl.java
+- **Purpose**: This file is responsible for providing implementation of services related to Hotel.
+- **Functions**:
+  - `findAll`: Returns a paginated list of all hotels.
+  - `findAll`: Returns a list of all hotels.
+  - `findById`: Returns a hotel by its ID.
+  - `create`: Creates a new hotel and returns its ID.
+  - `update`: Updates an existing hotel by its ID.
+  - `deleteById`: Deletes a hotel by its ID.
 
 ---
 
